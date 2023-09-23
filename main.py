@@ -1,10 +1,10 @@
-from CalcMetric import CalcMetric
-from time import perf_counter
-
 import Functions
 import CalcGradient
 import OutputFields
 import numpy as np
+
+from CalcMetric import CalcMetric
+from time import perf_counter
 
 
 def mesh_reader(file_name):
@@ -13,8 +13,8 @@ def mesh_reader(file_name):
         ni, nj = map(int, f.readline().split())
         x = y = np.empty((ni, nj))
         # Read mesh from file
-        for j in range(nj):
-            for i in range(ni):
+        for i in range(ni):
+            for j in range(nj):
                 x[i, j], y[i, j] = map(float, f.readline().split())
 
         return ni, nj, x, y
@@ -30,8 +30,8 @@ CellVolume, CellCenter = CalcMetric(NI, NJ, X, Y).run()
 
 # Initiate fields
 P = np.empty((NI + 1, NJ + 1))
-for j in range(NJ + 1):
-    for i in range(NI + 1):
+for i in range(NI + 1):
+    for j in range(NJ + 1):
         P[i, j] = Functions.Pressure(CellCenter[i, j, 0], CellCenter[i, j, 1])
 
 # Calculate gradient

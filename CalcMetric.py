@@ -1,4 +1,5 @@
 import numpy as np
+
 from numpy.linalg import norm
 
 
@@ -12,9 +13,9 @@ class CalcMetric:
         self.i_face_center = self.i_face_vector = np.empty((self.NI, self.NJ - 1, 2))
         self.j_face_center = self.j_face_vector = np.empty((self.NI - 1, self.NJ, 2))
 
-    def face_centers_vectors_i(self):  # FACE CENTERS AND FACE VECTORS I-DIRECTION
-        for j in range(self.NJ - 1):
-            for i in range(self.NI):
+    def face_centers_vectors_i(self):
+        for i in range(self.NI):
+            for j in range(self.NJ - 1):
                 self.r[0] = self.X[i, j + 1] - self.X[i, j]
                 self.r[1] = self.Y[i, j + 1] - self.Y[i, j]
                 self.i_face_vector[i, j, 0] = self.r[1]
@@ -22,9 +23,9 @@ class CalcMetric:
                 self.i_face_center[i, j, 0] = 0.5 * (self.X[i, j] + self.X[i, j + 1])
                 self.i_face_center[i, j, 1] = 0.5 * (self.Y[i, j] + self.Y[i, j + 1])
 
-    def face_centers_vectors_j(self):  # FACE CENTERS AND FACE VECTORS J-DIRECTION
-        for j in range(self.NJ):
-            for i in range(self.NI - 1):
+    def face_centers_vectors_j(self):
+        for i in range(self.NI - 1):
+            for j in range(self.NJ):
                 self.r[0] = self.X[i + 1, j] - self.X[i, j]
                 self.r[1] = self.Y[i + 1, j] - self.Y[i, j]
                 self.j_face_vector[i, j, 0] = -self.r[1]
@@ -32,11 +33,11 @@ class CalcMetric:
                 self.j_face_center[i, j, 0] = 0.5 * (self.X[i, j] + self.X[i + 1, j])
                 self.j_face_center[i, j, 1] = 0.5 * (self.Y[i, j] + self.Y[i + 1, j])
 
-    def cell_volumes(self):  # CELL VOLUMES
+    def cell_volumes(self):
         cell_volume = np.empty((self.NI - 1, self.NJ - 1))
 
-        for j in range(self.NJ - 1):
-            for i in range(self.NI - 1):
+        for i in range(self.NI - 1):
+            for j in range(self.NJ - 1):
                 self.r[0] = self.X[i + 1, j + 1] - self.X[i, j]
                 self.r[1] = self.Y[i + 1, j + 1] - self.Y[i, j]
                 cell_volume[i, j] = (0.5 * np.dot(self.i_face_vector[i, j], self.r) +
@@ -44,13 +45,12 @@ class CalcMetric:
 
         return cell_volume
 
-    # CELL CENTERS
     def cell_centers(self):
         cell_center = np.empty((self.NI + 1, self.NJ + 1, 2))
 
         # FOR INNER CELLS: CENTER OF CONTOUR
-        for j in range(self.NJ - 1):
-            for i in range(self.NI - 1):
+        for i in range(self.NI - 1):
+            for j in range(self.NJ - 1):
                 numerator = (self.i_face_center[i, j] * norm(self.i_face_vector[i, j]) +
                              self.i_face_center[i + 1, j] * norm(self.i_face_vector[i + 1, j]) +
                              self.j_face_center[i, j] * norm(self.j_face_vector[i, j]) +
