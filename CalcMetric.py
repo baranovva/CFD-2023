@@ -40,8 +40,10 @@ class CalcMetric:
             for j in range(self.NJ - 1):
                 self.r[0] = self.X[i + 1, j + 1] - self.X[i, j]
                 self.r[1] = self.Y[i + 1, j + 1] - self.Y[i, j]
-                cell_volume[i, j] = (0.5 * np.dot(self.i_face_vector[i, j], self.r) +
-                                     0.5 * np.dot(self.j_face_vector[i, j], self.r))
+                cell_volume[i, j] = (
+                        0.5 * np.dot(self.i_face_vector[i, j], self.r) +
+                        0.5 * np.dot(self.j_face_vector[i, j], self.r)
+                )
 
         return cell_volume
 
@@ -56,8 +58,10 @@ class CalcMetric:
                              self.j_face_center[i, j] * norm(self.j_face_vector[i, j]) +
                              self.j_face_center[i, j + 1] * norm(self.j_face_vector[i, j + 1]))
 
-                denominator = (norm(self.i_face_vector[i, j]) + norm(self.i_face_vector[i + 1, j]) +
-                               norm(self.j_face_vector[i, j]) + norm(self.j_face_vector[i, j + 1]))
+                denominator = (
+                        norm(self.i_face_vector[i, j]) + norm(self.i_face_vector[i + 1, j]) +
+                        norm(self.j_face_vector[i, j]) + norm(self.j_face_vector[i, j + 1])
+                )
 
                 cell_center[i, j, :] = numerator / denominator
 
