@@ -53,10 +53,12 @@ class CalcMetric:
         # FOR INNER CELLS: CENTER OF CONTOUR
         for i in range(self.NI - 1):
             for j in range(self.NJ - 1):
-                numerator = (self.i_face_center[i, j] * norm(self.i_face_vector[i, j]) +
-                             self.i_face_center[i + 1, j] * norm(self.i_face_vector[i + 1, j]) +
-                             self.j_face_center[i, j] * norm(self.j_face_vector[i, j]) +
-                             self.j_face_center[i, j + 1] * norm(self.j_face_vector[i, j + 1]))
+                numerator = (
+                        self.i_face_center[i, j] * norm(self.i_face_vector[i, j]) +
+                        self.i_face_center[i + 1, j] * norm(self.i_face_vector[i + 1, j]) +
+                        self.j_face_center[i, j] * norm(self.j_face_vector[i, j]) +
+                        self.j_face_center[i, j + 1] * norm(self.j_face_vector[i, j + 1])
+                )
 
                 denominator = (
                         norm(self.i_face_vector[i, j]) + norm(self.i_face_vector[i + 1, j]) +
