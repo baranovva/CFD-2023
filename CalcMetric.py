@@ -33,7 +33,7 @@ class CalcMetric:
                 self.j_face_center[i, j, 0] = 0.5 * (self.X[i, j] + self.X[i + 1, j])
                 self.j_face_center[i, j, 1] = 0.5 * (self.Y[i, j] + self.Y[i + 1, j])
 
-    def cell_volumes(self):
+    def cell_volumes(self) -> object:
         cell_volume = np.empty((self.NI - 1, self.NJ - 1))
 
         for i in range(self.NI - 1):
@@ -47,7 +47,7 @@ class CalcMetric:
 
         return cell_volume
 
-    def cell_centers(self):
+    def cell_centers(self) -> object:
         cell_center = np.empty((self.NI + 1, self.NJ + 1, 2))
 
         # FOR INNER CELLS: CENTER OF CONTOUR
@@ -84,10 +84,10 @@ class CalcMetric:
 
         return cell_center
 
-    def run(self):
+    def run(self) -> object:
         self.face_centers_vectors_i()
         self.face_centers_vectors_j()
         cell_center = self.cell_centers()
         cell_volume = self.cell_volumes()
 
-        return cell_volume, cell_center
+        return cell_volume, cell_center, self.i_face_center, self.j_face_center, self.i_face_vector, self.j_face_vector
