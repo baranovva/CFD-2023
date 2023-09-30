@@ -1,5 +1,6 @@
 import numpy as np
 
+from Functions import r_linear_interp
 from numpy.linalg import norm
 
 
@@ -45,12 +46,15 @@ def calc_gradient(
                     r_f = j_face_center[i, j + 1, :]
                     s_f = j_face_vector[i, j + 1, :]
 
-                vol = cell_volume[i, j]
                 r_c[:] = cell_center[i, j, :]
                 r_n[:] = cell_center[i_n, j_n, :]
 
                 dc = norm(r_f[:] - r_c[:])
                 dn = norm(r_f[:] - r_n[:])
 
+                p_f = r_linear_interp(dc, dn, p[i, j], p[i_n, j_n])
+                gp[:] += p_f * s_f[:]
+
+            vol = cell_volume[i, j]
             grad_p[i, j, :] = gp[:] / vol
     return grad_p

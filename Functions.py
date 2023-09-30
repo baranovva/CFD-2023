@@ -6,11 +6,11 @@ def pressure(x: object, y: object) -> object:
 
 
 def r_linear_interp(
-        d1: object,
-        d2: object,
-        x1: object,
-        x2: object
-) -> object:
+        d1: float,
+        d2: float,
+        x1,
+        x2
+) -> float:
     return (x1 * d2 + x2 * d1) / (d1 + d2)
 
 
