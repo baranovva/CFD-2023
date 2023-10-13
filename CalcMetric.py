@@ -4,7 +4,7 @@ from numpy.linalg import norm
 
 
 class CalcMetric:
-    def __init__(self, ni, nj, x, y):
+    def __init__(self, ni: int, nj: int, x: object, y: object):
         self.NI = ni
         self.NJ = nj
         self.X = x

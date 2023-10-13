@@ -7,9 +7,9 @@ def output_fields(
         nj: int,
         x: object,
         y: object,
-        p: object,
-        grad_p: object,
-        grad_p_error: object
+        p=None,
+        grad_p=None,
+        grad_p_error=None
 ) -> None:
     with open(file_name, 'w') as f:
         f.write(

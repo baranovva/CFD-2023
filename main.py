@@ -70,22 +70,21 @@ for i in range(ni + 1):
         # )
 
 # Calculate gradient
-grad_p = calc_gradient(
-        ni=ni,
-        nj=nj,
-        p=p,
-        cell_volume=cell_volume,
-        cell_center=cell_center,
-        i_face_center=i_face_center,
-        j_face_center=j_face_center,
-        i_face_vector=i_face_vector,
-        j_face_vector=j_face_vector
-)
-
-grad_p_error = abs(1 - (grad_p / grad_p_exact))
-
-print('Maximum GradPx-error:', np.max(grad_p_error[1:ni, 1:nj, 0]))
-print('Maximum GradPy-error:', np.max(grad_p_error[1:ni, 1:nj, 1]))
+n_iter = 10
+for it in range(0, n_iter):
+    grad_p = calc_gradient(
+            ni=ni, nj=nj,
+            p=p,
+            cell_volume=cell_volume,
+            cell_center=cell_center,
+            i_face_center=i_face_center,
+            j_face_center=j_face_center,
+            i_face_vector=i_face_vector,
+            j_face_vector=j_face_vector
+    )
+    grad_p_error = abs(1 - (grad_p / grad_p_exact))
+    print('Maximum GradPx-error:', np.max(grad_p_error[1:ni, 1:nj, 0]))
+    print('Maximum GradPy-error:', np.max(grad_p_error[1:ni, 1:nj, 1]))
 
 # Calculate gradient
 # div_v =

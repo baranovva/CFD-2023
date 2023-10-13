@@ -5,12 +5,7 @@ def pressure(x: object, y: object) -> object:
     return 5 * x + 3 * y
 
 
-def r_linear_interp(
-        d1: float,
-        d2: float,
-        x1,
-        x2
-) -> float:
+def r_linear_interp(d1, d2, x1, x2) -> float:
     return (x1 * d2 + x2 * d1) / (d1 + d2)
 
 
@@ -40,17 +35,17 @@ def velocity(
     return v
 
 
-def div_velocity_exact(x, y):
+def div_velocity_exact(x: object, y: object):
     return 1
 
 
-def div_velocity_p_exact(x, y):
+def div_velocity_p_exact(x: object, y: object):
     return 2 + 3 * x + 3 * y
 
 
-def calc_rot_exact(x, y):
+def calc_rot_exact(x: object, y: object):
     return 2
 
 
-def r_laplacian_p_exact(x, y):
+def r_laplacian_p_exact(x: object, y: object):
     return 4
