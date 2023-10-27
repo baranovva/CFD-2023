@@ -13,7 +13,20 @@ SUBROUTINE Calc_GradP_Exact(X, Y, GPE)
 
     !GPE(1) = 1.0
     !GPE(2) = 1.0
-    GPE(1) = 2 * X
-    GPE(2) = 2 * Y
+    GPE(1) = 2.0 * X
+    GPE(2) = 2.0 * Y
 
 END SUBROUTINE
+
+SUBROUTINE Velocity(x, y, V)
+    REAL :: x, y, V(2)
+
+    V(1) = 1.0 + X
+    V(2) = 1.0 + Y
+
+END SUBROUTINE
+
+FUNCTION DivVelocityExact(X, Y)
+    REAL :: X, Y
+    DivVelocityExact = 2.0
+END FUNCTION

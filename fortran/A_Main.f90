@@ -4,8 +4,9 @@ Program Main
     character MeshFile*30        ! name of file with computational mesh
     integer, parameter :: IO = 12 ! input-output unit
     real, allocatable, dimension(:, :) :: X, Y, P, CellVolume ! scalar arrays
-    real, allocatable, dimension(:, :, :) :: GradP, GradPExact, GradPError
+    real, allocatable, dimension(:, :, :) :: GradP, GradPExact, GradPError, V
     real, allocatable, dimension(:, :, :) :: CellCenter, IFaceCenter, IFaceVector, JFaceCenter, JFaceVector ! vector arrays
+    real, allocatable, dimension(:, :) :: DivV, DivVExact, DivVError
     INTEGER :: IT, NIter
 
     !===  READ INPUT FILE ===
@@ -36,6 +37,10 @@ Program Main
     allocate(IFaceVector(NI, NJ - 1, 2)) ! Face Vectors for I-faces
     allocate(JFaceCenter(NI - 1, NJ, 2)) ! Face Centers for J-faces
     allocate(JFaceVector(NI - 1, NJ, 2)) ! Face Vectors for I-faces
+    allocate(V(0:NI, 0:NJ, 2))
+    allocate(DivV(0:NI, 0:NJ))
+    allocate(DivVExact(0:NI, 0:NJ))
+    allocate(DivVError(0:NI, 0:NJ))
 
     !===  READ GRID ===
     WRITE(*, *) 'Read mesh from file: ', MeshFile
@@ -52,6 +57,8 @@ Program Main
         DO  I = 0, NI
             P(I, J) = Pressure(CellCenter(I, J, 1), CellCenter(i, j, 2))
             Call Calc_GradP_Exact(CellCenter(I, J, 1), CellCenter(I, J, 2), GradPExact(I, J, :))
+            CALL Velocity(CellCenter(I, J, 1), CellCenter(i, j, 2), V(I, J, :))
+            DivVExact(I, J) = DivVelocityExact(CellCenter(I, J, 1), CellCenter(i, j, 2))
         ENDDO
     ENDDO
 
@@ -60,17 +67,26 @@ Program Main
     DO IT = 1, NIter
 
         Call B_CalcGradient(NI, NJ, P, GradP, CellVolume, CellCenter, IFaceCenter, IFaceVector, JFaceCenter, JFaceVector)
-        GradPError = ABS(GradPExact - GradP)!/GradPExact
+        GradPError = ABS(GradPExact - GradP) / GradPExact
         WRITE(*, *) 'Iteration: ', IT, 'MAXIMUM ERROR: ', MAXVAL(GradPError(1:NI - 1, 1:NJ - 1, :))
 
     ENDDO
     write(*, *) 'Maximum Gradx-error:', maxval(GradPError(1:NI - 1, 1:NJ - 1, 1))
     write(*, *) 'Maximum Grady-error:', maxval(GradPError(1:NI - 1, 1:NJ - 1, 2))
 
+    !=== CALCULATE GRADIENT ===
+    WRITE(*, *) 'Calculate divergence'
+    DivV = 0.0
+    CALL B_CalcDivergence(NI, NJ, V, DivV, CellVolume, CellCenter, IFaceCenter, IFaceVector, JFaceCenter, JFaceVector)
+    DivVError = ABS(DivVExact - DivV) / DivVExact
+    WRITE(*, *) 'Maximum error of divergence: ', MAXVAL(DivVError(1:NI - 1, 1:NJ - 1))
+    WRITE(*, *) "==============="
+    WRITE(*, *) CellCenter
+
     !=== OUTPUT FIELDS ===
     WRITE(*, *) 'Output fields to file: ', OutputFile
     Open(IO, FILE = OutputFile)
-    Call B_OutputFields(IO, NI, NJ, X, Y, P, GradP, GradPError)
+    Call B_OutputFields(IO, NI, NJ, X, Y, P, GradP, GradPError, V, DivV, DivVError)
     Close(IO)
 
 END PROGRAM Main  
