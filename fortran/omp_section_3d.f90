@@ -1,67 +1,67 @@
-      PROGRAM OPENMP_3D_ARRAY
-      INCLUDE 'omp_lib.h'
-      INTEGER I, J, K, L, NI, NJ, NK, INFILE, OUTFILE
-      DOUBLE PRECISION T1, T2
-      DOUBLE PRECISION, ALLOCATABLE :: X(:,:,:), Y(:,:,:), Z(:,:,:), V(:,:,:)
+PROGRAM OPENMP_3D_ARRAY
+    INCLUDE 'omp_lib.h'
+    INTEGER I, J, K, L, NI, NJ, NK, INFILE, OUTFILE
+    DOUBLE PRECISION T1, T2
+    DOUBLE PRECISION, ALLOCATABLE :: X(:, :, :), Y(:, :, :), Z(:, :, :), V(:, :, :)
 
-      OPEN(INFILE, FILE="CUBE.MSH")
-      READ(INFILE,*) NI, NJ, NK 
-      ALLOCATE (X(NI,NJ,NK), Y(NI,NJ,NK), Z(NI,NJ,NK), V(NI-1,NJ-1,NK-1))
-      DO K=1, NK 
-        DO J=1, NJ 
-         DO I=1, NI 
-          READ(INFILE,*) X(I,J,K), Y(I,J,K), Z(I,J,K) 
-         END DO 
+    OPEN(INFILE, FILE = "CUBE.MSH")
+    READ(INFILE, *) NI, NJ, NK
+    ALLOCATE (X(NI, NJ, NK), Y(NI, NJ, NK), Z(NI, NJ, NK), V(NI - 1, NJ - 1, NK - 1))
+    DO K = 1, NK
+        DO J = 1, NJ
+            DO I = 1, NI
+                READ(INFILE, *) X(I, J, K), Y(I, J, K), Z(I, J, K)
+            END DO
         END DO
-      END DO
-      CLOSE(INFILE)
+    END DO
+    CLOSE(INFILE)
 
-      V = 0.0
-      T1 = OMP_GET_WTIME()
-!$OMP PARALLEL PRIVATE(I,J,K)
-      DO L=1,10
-!$OMP SECTIONS !Разделение на секции
-!$OMP SECTION !1-я секция
-      DO K=1, NK-1
-       DO J=1, NJ-1
-        DO I=1, NI-1
-            V(I,J,K) = (X(I+1,J,K)-X(I,J,K))*(Y(I,J+1,K)-Y(I,J,K))*(Z(I,J,K+1)-Z(I,J,K))
+    V = 0.0
+    T1 = OMP_GET_WTIME()
+    !$OMP PARALLEL PRIVATE(I,J,K)
+    DO L = 1, 10
+        !$OMP SECTIONS !пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+        !$OMP SECTION !1-пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+        DO K = 1, NK - 1
+            DO J = 1, NJ - 1
+                DO I = 1, NI - 1
+                    V(I, J, K) = (X(I + 1, J, K) - X(I, J, K)) * (Y(I, J + 1, K) - Y(I, J, K)) * (Z(I, J, K + 1) - Z(I, J, K))
+                END DO
+            END DO
         END DO
-       END DO
-      END DO
-!$OMP SECTION !2-я секция
-      DO K=1, NK-1
-       DO J=1, NJ-1
-        DO I=1, NI-1
-            V(I,J,K) = (X(I+1,J,K)-X(I,J,K))*(Y(I,J+1,K)-Y(I,J,K))*(Z(I,J,K+1)-Z(I,J,K))
+        !$OMP SECTION !2-пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+        DO K = 1, NK - 1
+            DO J = 1, NJ - 1
+                DO I = 1, NI - 1
+                    V(I, J, K) = (X(I + 1, J, K) - X(I, J, K)) * (Y(I, J + 1, K) - Y(I, J, K)) * (Z(I, J, K + 1) - Z(I, J, K))
+                END DO
+            END DO
         END DO
-       END DO
-      END DO
-!$OMP SECTION !3-я секция
-      DO K=1, NK-1
-       DO J=1, NJ-1
-        DO I=1, NI-1
-            V(I,J,K) = (X(I+1,J,K)-X(I,J,K))*(Y(I,J+1,K)-Y(I,J,K))*(Z(I,J,K+1)-Z(I,J,K))
+        !$OMP SECTION !3-пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+        DO K = 1, NK - 1
+            DO J = 1, NJ - 1
+                DO I = 1, NI - 1
+                    V(I, J, K) = (X(I + 1, J, K) - X(I, J, K)) * (Y(I, J + 1, K) - Y(I, J, K)) * (Z(I, J, K + 1) - Z(I, J, K))
+                END DO
+            END DO
         END DO
-       END DO
-      END DO
-!$OMP END SECTIONS
-      END DO
-!$OMP END PARALLEL
-      T2 = OMP_GET_WTIME()
-      PRINT *, 'computational time: ', T2-T1, 's'
-      WRITE(*,*) 'Max volume: ', MAXVAL(V) 
+        !$OMP END SECTIONS
+    END DO
+    !$OMP END PARALLEL
+    T2 = OMP_GET_WTIME()
+    PRINT *, 'computational time: ', T2 - T1, 's'
+    WRITE(*, *) 'Max volume: ', MAXVAL(V)
 
-      OPEN(OUTFILE, FILE="CUBE_NEW.MSH")
-      WRITE(OUTFILE,*) NI, NJ, NK 
-      DO K=1, NK 
-        DO J=1, NJ 
-         DO I=1, NI 
-          WRITE(OUTFILE,*) X(I,J,K), Y(I,J,K), Z(I,J,K) 
-         END DO 
+    OPEN(OUTFILE, FILE = "CUBE_NEW.MSH")
+    WRITE(OUTFILE, *) NI, NJ, NK
+    DO K = 1, NK
+        DO J = 1, NJ
+            DO I = 1, NI
+                WRITE(OUTFILE, *) X(I, J, K), Y(I, J, K), Z(I, J, K)
+            END DO
         END DO
-      END DO
-      CLOSE(OUTFILE)
-      DEALLOCATE(X,Y,Z)
+    END DO
+    CLOSE(OUTFILE)
+    DEALLOCATE(X, Y, Z)
 
-      END
+END
