@@ -65,10 +65,6 @@ print('Maximum DivV-error:', np.max(div_v_error[1:ni, 1:nj]))
 
 # Output fields to file
 output_file = 'data.dat'
-output_fields(file_name=output_file,
-              ni=ni, nj=nj,
+output_fields(file_name=output_file, ni=ni, nj=nj,
               x=x, y=y, p=p, v=v,
-              grad_p=grad_p,
-              grad_p_error=grad_p_error)
-'''
-              grad_p_error=grad_p_error)'''
+              grad_p=grad_p, grad_p_error=grad_p_error)
