@@ -5,7 +5,7 @@ def output_fields(file_name: str, ni: int, nj: int, x: object,
                   y: object, p: object, v: object, grad_p: object,
                   grad_p_error: object, div_v=None, div_v_error=None) -> None:
     with open(file_name, 'w') as f:
-        f.write('VARIABLES = "X", "Y", "P", "VX", "VY", "GradPX", "GradPY", "GradPErrorX", "GradPErrorY"\n')
+        f.write(f'VARIABLES = "X", "Y", "P", "VX", "VY", "GradPX", "GradPY", "GradPErrorX", "GradPErrorY"\n')
 
         '''  , "DivVx", "DivVy",'
                 ' "DivVxError", "DivVyError"  '''

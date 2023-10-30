@@ -34,8 +34,8 @@ for it in range(n_iter):
 
     grad_p_error = abs(1 - (grad_p / grad_p_exact))
 
-print('Maximum GradPx-error:', np.max(grad_p_error[1:ni, 1:nj, 0]))
-print('Maximum GradPy-error:', np.max(grad_p_error[1:ni, 1:nj, 1]))
+print(f'Maximum GradPx-error: {np.max(grad_p_error[1:ni, 1:nj, 0])}')
+print(f'Maximum GradPy-error: {np.max(grad_p_error[1:ni, 1:nj, 1])}')
 # funcs.figure(5, 'grad_p_x', grad_p[1:ni, 1:nj, 0], 'turbo')
 # funcs.figure(5, 'grad_p_y', grad_p[1:ni, 1:nj, 1], 'turbo')
 
@@ -59,7 +59,7 @@ div_v = calc_divergence(ni=ni, nj=nj, v=v,
                         i_face_vector=i_face_vector,
                         j_face_vector=j_face_vector)
 div_v_error = abs(1 - (div_v / div_v_exact))
-print('Maximum DivV-error:', np.max(div_v_error[1:ni, 1:nj]))
+print(f'Maximum DivV-error: {np.max(div_v_error[1:ni, 1:nj])}')
 
 # funcs.figure(5, 'div_v', div_v[1:ni, 1:nj], 'turbo')
 
