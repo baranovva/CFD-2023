@@ -59,8 +59,8 @@ div_v = calc_divergence(ni=ni, nj=nj, v=v,
                         i_face_vector=i_face_vector,
                         j_face_vector=j_face_vector)
 div_v_error = abs(1 - (div_v / div_v_exact))
-print(f'Maximum DivV-error: {np.max(div_v_error[1:ni, 1:nj])}')
 
+print(f'Maximum DivV-error: {np.max(div_v_error[1:ni, 1:nj])}')
 # funcs.figure(5, 'div_v', div_v[1:ni, 1:nj], 'turbo')
 
 # Output fields to file
