@@ -4,53 +4,39 @@ from Functions import r_linear_interp
 from numpy.linalg import norm
 
 
-def calc_gradient(
-        ni: int, nj: int, p: object,
-        cell_volume: object,
-        cell_center: object,
-        i_face_center: object,
-        j_face_center: object,
-        i_face_vector: object,
-        j_face_vector: object
-):
-    grad_p = np.empty((ni + 1, nj + 1, 2))
-    r_c = np.zeros(2)
-    r_n = np.zeros(2)
-
-    for i in range(2, ni - 2):
-        for j in range(2, nj - 2):
+def calc_gradient(ni: int, nj: int, p: object, grad_p: object,
+                  cell_volume: object, cell_center: object,
+                  i_face_center: object, j_face_center: object,
+                  i_face_vector: object, j_face_vector: object) -> object:
+    for i in range(1, ni):
+        for j in range(1, nj):
             gp = np.zeros(2)
             for i_face in (1, 2, 3, 4):
-
                 if i_face == 1:
                     i_n = i - 1
                     j_n = j
-                    r_f = i_face_center[i, j, :]
-                    s_f = - i_face_vector[i, j, :]
-
+                    r_f = i_face_center[i - 1, j - 1, :]
+                    s_f = - i_face_vector[i - 1, j - 1, :]
                 elif i_face == 2:
                     i_n = i + 1
                     j_n = j
-                    r_f = i_face_center[i + 1, j, :]
-                    s_f = i_face_vector[i + 1, j, :]
-
+                    r_f = i_face_center[i, j - 1, :]
+                    s_f = i_face_vector[i, j - 1, :]
                 elif i_face == 3:
                     i_n = i
                     j_n = j - 1
-                    r_f = j_face_center[i, j, :]
-                    s_f = - j_face_vector[i, j, :]
-
+                    r_f = j_face_center[i - 1, j - 1, :]
+                    s_f = - j_face_vector[i - 1, j - 1, :]
                 else:
                     i_n = i
                     j_n = j + 1
-                    r_f = j_face_center[i, j + 1, :]
-                    s_f = j_face_vector[i, j + 1, :]
+                    r_f = j_face_center[i - 1, j, :]
+                    s_f = j_face_vector[i - 1, j, :]
 
-                r_c[:] = cell_center[i, j, :]  # радиус вектор центра ячейка, индексы пробегаем
-                r_n[:] = cell_center[i_n, j_n, :]  # радиус вектор центра ячейка, индексы заграничные
-
-                dc = norm(r_f[:] - r_c[:])  # расстояние от границы до центра текущей ячейки
-                dn = norm(r_f[:] - r_n[:])  # расстояние от границы до центра соседних ячеек
+                dc = norm(r_f[:] - cell_center[i, j, :])  # расстояние от границы до центра текущей ячейки,
+                # радиус вектор центра ячейка, индексы пробегаем
+                dn = norm(r_f[:] - cell_center[i_n, j_n, :])  # расстояние от границы до центра соседних ячеек
+                # радиус вектор центра ячейка, индексы заграничные
 
                 p_e = r_linear_interp(dc, dn, p[i, j], p[i_n, j_n])  # давление на грани
 
@@ -69,5 +55,5 @@ def calc_gradient(
 
                 gp[:] += p_f * s_f[:]  # gradp
 
-            grad_p[i, j, :] = gp[:] / cell_volume[i, j]
+            grad_p[i, j, :] = gp[:] / cell_volume[i-1, j-1]
     return grad_p

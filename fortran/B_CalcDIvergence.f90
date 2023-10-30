@@ -39,11 +39,11 @@ Subroutine B_CalcDivergence(NI, NJ, V, DivV, CellVolume, CellCenter, IFaceCenter
                 END SELECT
 
                 VOL = CellVolume(I, J)
-                RC(:) = CellCenter(I, J, :) ! ����� ������� ������
-                RN(:) = CellCenter(I_N, J_N, :) !����� �������� ������
+                RC(:) = CellCenter(I, J, :)
+                RN(:) = CellCenter(I_N, J_N, :)
 
-                DC = Norm2(RF(:) - RC(:)) !����2 - ������ �������, ���������� �� �����
-                DN = Norm2(RF(:) - RN(:)) ! ���������� �� ������ �������� �� �����
+                DC = Norm2(RF(:) - RC(:))
+                DN = Norm2(RF(:) - RN(:))
 
                 VF(1) = RLinearInterp(DC, DN, V(I, J, 1), V(I_N, J_N, 1))
                 VF(2) = RLinearInterp(DC, DN, V(I, J, 2), V(I_N, J_N, 2))

@@ -40,15 +40,3 @@ def grad_p_exact(ni: int, nj: int, x: object, y: object) -> object:
 
 def div_velocity_exact(x: object, y: object):
     return 2
-
-
-def div_velocity_p_exact(x: object, y: object):
-    return 2 + 3 * x + 3 * y
-
-
-def calc_rot_exact(x: object, y: object):
-    return 2
-
-
-def r_laplacian_p_exact(x: object, y: object):
-    return 4

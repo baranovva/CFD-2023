@@ -18,10 +18,10 @@ Subroutine B_CalcGradient(NI, NJ, P, GradP, CellVolume, CellCenter, IFaceCenter,
                 SELECT CASE(IFace)
 
                 CASE(1)
-                    I_N = I - 1 !������� �������� �����
+                    I_N = I - 1
                     J_N = J
-                    RF(:) = IFaceCenter(I, J, :) !������-������ ������ �����
-                    SF(:) = -IFaceVector(I, J, :) !������ ������� �����
+                    RF(:) = IFaceCenter(I, J, :)
+                    SF(:) = -IFaceVector(I, J, :)
                 CASE(2)
                     I_N = I + 1
                     J_N = J
@@ -40,11 +40,11 @@ Subroutine B_CalcGradient(NI, NJ, P, GradP, CellVolume, CellCenter, IFaceCenter,
                 END SELECT
 
                 VOL = CellVolume(I, J)
-                RC(:) = CellCenter(I, J, :) ! ����� ������� ������
-                RN(:) = CellCenter(I_N, J_N, :) !����� �������� ������
+                RC(:) = CellCenter(I, J, :)
+                RN(:) = CellCenter(I_N, J_N, :)
 
-                DC = Norm2(RF(:) - RC(:)) !����2 - ������ �������, ���������� �� �����
-                DN = Norm2(RF(:) - RN(:)) ! ���������� �� ������ �������� �� �����
+                DC = Norm2(RF(:) - RC(:))
+                DN = Norm2(RF(:) - RN(:))
 
                 PE = RLinearInterp(DC, DN, P(I, J), P(I_N, J_N))
 
