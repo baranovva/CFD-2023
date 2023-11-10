@@ -38,5 +38,5 @@ def grad_p_exact(ni: int, nj: int, x: object, y: object) -> object:
     return grad_p_ex
 
 
-def div_velocity_exact(x: object, y: object):
-    return 2
+def div_velocity_pressure_exact(x: object, y: object):
+    return 2 + 3 * x + 3 * y

@@ -41,27 +41,31 @@ print(f'Maximum GradPy-error: {np.max(grad_p_error[1:ni, 1:nj, 1])}')
 
 # Initiate field V
 v = np.empty((ni + 1, nj + 1, 2))
+div_v_p_exact = np.empty((ni + 1, nj + 1))
 for i in range(ni + 1):
     for j in range(nj + 1):
         v[i, j, 0] = 1 + cell_center[i, j, 0]
         v[i, j, 1] = 1 + cell_center[i, j, 1]
-        div_v_exact = funcs.div_velocity_exact(cell_center[i, j, 0], cell_center[i, j, 1])
+        div_v_p_exact[i, j] = funcs.div_velocity_pressure_exact(cell_center[i, j, 0], cell_center[i, j, 1])
 
 # funcs.figure(5, 'vx', v[1:ni, 1:nj, 0], 'turbo')
 # funcs.figure(5, 'vy', v[1:ni, 1:nj, 1], 'turbo')
 
-# Calculate divergence V
-div_v = calc_divergence(ni=ni, nj=nj, v=v,
-                        cell_volume=cell_volume,
-                        cell_center=cell_center,
-                        i_face_center=i_face_center,
-                        j_face_center=j_face_center,
-                        i_face_vector=i_face_vector,
-                        j_face_vector=j_face_vector)
-div_v_error = abs(1 - (div_v / div_v_exact))
+# Calculate divergence V and P
+mode = 3
+div_v_p = calc_divergence(mode=mode, ni=ni, nj=nj,
+                          v=v, grad_p=grad_p, p=p,
+                          cell_volume=cell_volume,
+                          cell_center=cell_center,
+                          i_face_center=i_face_center,
+                          j_face_center=j_face_center,
+                          i_face_vector=i_face_vector,
+                          j_face_vector=j_face_vector)
+div_v_p_error = abs(1 - (div_v_p / div_v_p_exact))
 
-print(f'Maximum DivV-error: {np.max(div_v_error[1:ni, 1:nj])}')
-# funcs.figure(5, 'div_v', div_v[1:ni, 1:nj], 'turbo')
+print(f'Maximum DivV-error: {np.max(div_v_p_error[1:ni, 1:nj])}')
+funcs.figure(5, 'div_v', div_v_p[1:ni, 1:nj], 'turbo')
+funcs.figure(5, 'div_v_error', div_v_p_error[1:ni, 1:nj], 'turbo')
 
 # Output fields to file
 output_file = 'data.dat'
