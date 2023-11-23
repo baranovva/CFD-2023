@@ -8,7 +8,6 @@ def mesh_reader(file_name: str) -> object:
         ni, nj = map(int, f.readline().split())
         x = np.empty((ni, nj))
         y = np.empty((ni, nj))
-
         # Read mesh from file
         for i in range(ni):
             for j in range(nj):
@@ -28,15 +27,3 @@ def figure(figsize, title, data, cmap):
 
 def r_linear_interp(d1, d2, x1, x2) -> float:
     return (x1 * d2 + x2 * d1) / (d1 + d2)
-
-
-def grad_p_exact(ni: int, nj: int, x: object, y: object) -> object:
-    grad_p_ex = np.empty((ni + 1, nj + 1, 2))
-    grad_p_ex[:, :, 0] = 5
-    grad_p_ex[:, :, 1] = 3
-
-    return grad_p_ex
-
-
-def div_velocity_pressure_exact(x: object, y: object):
-    return 2 + 3 * x + 3 * y

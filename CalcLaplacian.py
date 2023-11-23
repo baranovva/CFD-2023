@@ -4,13 +4,13 @@ from Functions import r_linear_interp
 from numpy.linalg import norm
 
 
-def calc_gradient(ni: int, nj: int, p: object, grad_p: object,
-                  cell_volume: object, cell_center: object,
-                  i_face_center: object, j_face_center: object,
-                  i_face_vector: object, j_face_vector: object) -> object:
+def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
+                   cell_volume: object, cell_center: object,
+                   i_face_center: object, j_face_center: object,
+                   i_face_vector: object, j_face_vector: object) -> object:
+    lap_p = np.zeros((ni + 1, nj + 1))
     for i in range(1, ni):
         for j in range(1, nj):
-            gp = np.zeros(2)
             for i_face in (1, 2, 3, 4):
                 if i_face == 1:
                     i_n = i - 1
@@ -37,23 +37,26 @@ def calc_gradient(ni: int, nj: int, p: object, grad_p: object,
                 # радиус вектор центра ячейка, индексы пробегаем
                 dn = norm(r_f[:] - cell_center[i_n, j_n, :])  # расстояние от границы до центра соседних ячеек
                 # радиус вектор центра ячейка, индексы заграничные
+                dnc = norm(cell_center[i_n, j_n, :] - cell_center[i, j, :])
+                n_f = np.zeros_like(s_f)
+                n_f[:] = s_f[:] / norm(s_f[:])
 
-                p_e = r_linear_interp(dc, dn, p[i, j], p[i_n, j_n])  # давление на грани
+                rnc = (cell_center[i_n, j_n, :] - cell_center[i, j, :]) / dnc
+                g_f = np.zeros_like(s_f)
+                g_f[0] = r_linear_interp(dc, dn, grad_p[i, j, 0], grad_p[i_n, j_n, 0])
+                g_f[0] = r_linear_interp(dc, dn, grad_p[i, j, 1], grad_p[i_n, j_n, 1])
 
-                # коордиаты до точки e
-                r_e = np.zeros(2)
-                r_e[0] = r_linear_interp(dc, dn, cell_center[i, j, 0], cell_center[i_n, j_n, 0])
-                r_e[1] = r_linear_interp(dc, dn, cell_center[i, j, 1], cell_center[i_n, j_n, 1])
+                dpdn = (p[i_n, j_n] - p[i, j]) / dnc
 
-                # grad в точке е
-                gp_e = np.zeros(2)
-                gp_e[0] = r_linear_interp(dc, dn, grad_p[i, j, 0], grad_p[i_n, j_n, 0])
-                gp_e[0] = r_linear_interp(dc, dn, grad_p[i, j, 1], grad_p[i_n, j_n, 1])
+                if dn < 1e-5:
+                    dpdn_c = np.dot(grad_p[i, j, :], n_f[:])
+                    # dpdn = dpdn_c # 0-ORDER
+                    # dpdn += dpdn - dpdn_c # 1 - ORDER
+                    dpdn = 5 * dpdn / 3 - 2 * dpdn_c / 3  # 2 - ORDER
+                    g_f = grad_p[i, j, :]
 
-                # лин интерполяция радиус вектора в точке e
-                p_f = p_e + np.dot(r_f[:] - r_e[:], gp_e[:])
+                dpdn += np.dot(n_f[:] - rnc[:], g_f[:])
+                lap_p[i, j] += dpdn * norm(s_f[:])
 
-                gp[:] += p_f * s_f[:]  # gradp
-
-            grad_p[i, j, :] = gp[:] / cell_volume[i - 1, j - 1]
-    return grad_p
+            lap_p[i, j] /= cell_volume[i - 1, j - 1]
+    return lap_p
