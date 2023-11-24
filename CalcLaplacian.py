@@ -15,7 +15,7 @@ def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
                 if i_face == 1:
                     i_n = i - 1
                     j_n = j
-                    r_f = i_face_center[i - 1, j - 1, :]
+                    r_f = i_face_center[i - 1, j - 1, :]  # центр грани
                     s_f = - i_face_vector[i - 1, j - 1, :]
                 elif i_face == 2:
                     i_n = i + 1
@@ -37,22 +37,23 @@ def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
                 # радиус вектор центра ячейка, индексы пробегаем
                 dn = norm(r_f[:] - cell_center[i_n, j_n, :])  # расстояние от границы до центра соседних ячеек
                 # радиус вектор центра ячейка, индексы заграничные
-                dnc = norm(cell_center[i_n, j_n, :] - cell_center[i, j, :])
+                dnc = norm(cell_center[i_n, j_n, :] - cell_center[i, j, :])  # расстояние между центрами ячеек
                 n_f = np.zeros_like(s_f)
-                n_f[:] = s_f[:] / norm(s_f[:])
+                n_f[:] = s_f[:] / norm(s_f[:])  # eдиничный вектор внешней нормали
 
-                rnc = (cell_center[i_n, j_n, :] - cell_center[i, j, :]) / dnc
+                # for skew correction
+                rnc = (cell_center[i_n, j_n, :] - cell_center[i, j, :]) / dnc  # вектор по линии центров
                 g_f = np.zeros_like(s_f)
                 g_f[0] = r_linear_interp(dc, dn, grad_p[i, j, 0], grad_p[i_n, j_n, 0])
-                g_f[0] = r_linear_interp(dc, dn, grad_p[i, j, 1], grad_p[i_n, j_n, 1])
+                g_f[1] = r_linear_interp(dc, dn, grad_p[i, j, 1], grad_p[i_n, j_n, 1])
 
-                dpdn = (p[i_n, j_n] - p[i, j]) / dnc
+                dpdn = (p[i_n, j_n] - p[i, j]) / dnc  # производная  dp/dn
 
                 if dn < 1e-5:
                     dpdn_c = np.dot(grad_p[i, j, :], n_f[:])
                     # dpdn = dpdn_c # 0-ORDER
                     # dpdn += dpdn - dpdn_c # 1 - ORDER
-                    dpdn = 5 * dpdn / 3 - 2 * dpdn_c / 3  # 2 - ORDER
+                    dpdn = (5 * dpdn - 2 * dpdn_c) / 3  # 2 - ORDER
                     g_f = grad_p[i, j, :]
 
                 dpdn += np.dot(n_f[:] - rnc[:], g_f[:])

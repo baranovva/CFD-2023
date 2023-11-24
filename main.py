@@ -17,9 +17,9 @@ p = np.zeros((ni + 1, nj + 1))
 grad_p_exact = np.zeros((ni + 1, nj + 1, 2))
 for i in range(ni + 1):
     for j in range(nj + 1):
-        p[i, j] = 5 * cell_center[i, j, 0] + 3 * cell_center[i, j, 1]
-        grad_p_exact[:, :, 0] = 5
-        grad_p_exact[:, :, 1] = 3
+        p[i, j] = cell_center[i, j, 0] + cell_center[i, j, 1]
+        grad_p_exact[:, :, 0] = 1
+        grad_p_exact[:, :, 1] = 1
 
 # funcs.figure(5, 'p', p[1:ni, 1:nj], 'turbo')
 
@@ -53,7 +53,7 @@ for i in range(ni + 1):
 
 # funcs.figure(5, 'vx', v[1:ni, 1:nj, 0], 'turbo')
 # funcs.figure(5, 'vy', v[1:ni, 1:nj, 1], 'turbo')
-funcs.figure(5, 'div_v_p_exact', div_v_p_exact[1:ni, 1:nj], 'turbo')
+# funcs.figure(5, 'div_v_p_exact', div_v_p_exact[1:ni, 1:nj], 'turbo')
 
 # Calculate divergence V and P
 mode = 1
@@ -68,14 +68,14 @@ div_v_p = calc_divergence(mode=mode, ni=ni, nj=nj,
 div_v_p_error = np.abs(1 - (div_v_p / div_v_p_exact))
 
 print(f'Maximum DivV-error: {np.max(div_v_p_error[1:ni, 1:nj])}')
-funcs.figure(5, 'div_v', div_v_p[1:ni, 1:nj], 'turbo')
-funcs.figure(5, 'div_v_error', div_v_p_error[1:ni, 1:nj], 'turbo')
+# funcs.figure(5, 'div_v', div_v_p[1:ni, 1:nj], 'turbo')
+# funcs.figure(5, 'div_v_error', div_v_p_error[1:ni, 1:nj], 'turbo')
 
 # Calculate laplacian P
 lap_p_exact = np.zeros((ni + 1, nj + 1))
 for i in range(ni + 1):
     for j in range(nj + 1):
-        lap_p_exact[i, j] = 4
+        lap_p_exact[i, j] = None
 
 lap_p = calc_laplacian(ni=ni, nj=nj, p=p, grad_p=grad_p,
                        cell_volume=cell_volume,
