@@ -51,8 +51,6 @@ def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
 
                 if dn < 1e-5:
                     dpdn_c = np.dot(grad_p[i, j, :], n_f[:])
-                    # dpdn = dpdn_c # 0-ORDER
-                    # dpdn += dpdn - dpdn_c # 1 - ORDER
                     dpdn = (5 * dpdn - 2 * dpdn_c) / 3  # 2 - ORDER
                     g_f = grad_p[i, j, :]
 
