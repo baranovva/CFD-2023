@@ -1,16 +1,15 @@
-Subroutine B_CalcLaplacian(NI,NJ,P,GradP,LapP,CellVolume,CellCenter,IFaceCenter,IFaceVector,JFaceCenter,JFaceVector)
+Subroutine B_CalcRotter(NI,NJ,V,RotV,CellVolume,CellCenter,IFaceCenter,IFaceVector,JFaceCenter,JFaceVector)
 
     INTEGER :: NI,NJ
-    REAL :: P(0:NI,0:NJ), GradP(0:NI,0:NJ,2), LapP(0:NI,0:NJ)
+    REAL :: V(0:NI,0:NJ,2), RotV(0:NI,0:NJ)
     REAL :: CellVolume(NI-1,NJ-1)
     REAL :: CellCenter(0:NI,0:NJ,2), IFaceCenter( NI,NJ-1,2), IFaceVector( NI,NJ-1,2), JFaceCenter( NI-1,NJ,2), JFaceVector( NI-1,NJ,2)
     
-    REAL :: GP(2),VOL, RF(2), SF(2), RC(2), RN(2), DNC, NF(2), RNC(2), GF(2), dpdn, dpdn_c
+    REAL :: VOL, RF(2), SF(2), RC(2), RN(2), VF(2), DC, DN
     INTEGER :: IFace,I_N,J_N
     
     DO I=1,NI-1
         DO J=1,NJ-1
-            GP = 0.0
             DO IFace=1,4
                 SELECT CASE(IFace)
                 
@@ -42,30 +41,14 @@ Subroutine B_CalcLaplacian(NI,NJ,P,GradP,LapP,CellVolume,CellCenter,IFaceCenter,
                 
                 DC = Norm2(RF(:)-RC(:)) !норм2 - модуль вектора, расстояние до грани
                 DN = Norm2(RF(:)-RN(:)) ! расстояние от центра соседней до грани
-                DNC = Norm2(CellCenter(I_N,J_N,:)-CellCenter(I,J,:)) !Расстояние между центрами ячеек
-                NF(:) = SF(:)/Norm2(SF(:)) !Перпендикулярный вектор грани
                 
-                !for skew correction
-                
-                RNC(:)=(CellCenter(I_N,J_N,:)-CellCenter(I,J,:))/DNC !Вектор по линии центров
-                GF(1) = RLinearInterp(DC,DN,GradP(I,J,1),GradP(I_N,J_N,1))
-				GF(2) = RLinearInterp(DC,DN,GradP(I,J,2),GradP(I_N,J_N,2))
-                
-                dpdn = (P(I_N,J_N)-P(I,J))/DNC
-                
-                IF (DN<1E-5) THEN
-                    dpdn_c=DOT_PRODUCT(GradP(I,J,:),NF(:))
-                    !dpdn=dpdn_c !0-ORDER
-                    !dpdn=dpdn+(dpdn-dpdn_c) !1-ORDER
-                    dpdn=5.0/3.0*dpdn-2.0/3.0*dpdn_c !2-ORDER возможно +2/3, так как нормаль в другую сторону в лекциях
-                    GF(:)=GradP(I,J,:)
-                ENDIF
-                			
-				dpdn = dpdn + DOT_PRODUCT((NF(:)-RNC(:)),GF(:)) !skew correction
-                LapP(I,J)=LapP(I,J)+dpdn*Norm2(SF(:))
-                
+                VF(1) = RLinearInterp(DC,DN,V(I,J,1),V(I_N,J_N,1))
+                VF(2) = RLinearInterp(DC,DN,V(I,J,2),V(I_N,J_N,2))
+    
+                RotV(I,J) = RotV(I,J) + (SF(1)*VF(2)-SF(2)*VF(1))          
+                                
             ENDDO
-            LapP(I,J) = LapP(I,J)/VOL
+            RotV(I,J) = RotV(I,J)/VOL
             
         ENDDO
     ENDDO
