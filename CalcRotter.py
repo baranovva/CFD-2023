@@ -39,7 +39,7 @@ def calc_rotter(ni: int, nj: int, v: object,
                 dn = norm(r_f[:] - cell_center[i_n, j_n, :])  # расстояние от границы до центра соседних ячеек
                 # радиус вектор центра ячейка, индексы заграничные
 
-                v_f = np.zeros(2)
+                v_f = np.empty(2)
                 v_f[0] = r_linear_interp(dc, dn, v[i, j, 0], v[i_n, j_n, 0])  # скорость на грани
                 v_f[1] = r_linear_interp(dc, dn, v[i, j, 1], v[i_n, j_n, 1])
 

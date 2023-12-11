@@ -5,20 +5,19 @@ from numpy.linalg import norm
 from numpy import dot
 
 
-def calc_CD(ni: int, nj: int, vel_cd: object, CFL, Re, Pr, RES,
+def calc_CD(ni: int, nj: int, vel_cd: object, CFL, Re, Pr,
             cell_volume: object, cell_center: object,
             i_face_center: object, j_face_center: object,
             i_face_vector: object, j_face_vector: object):
     max_iter = 100000
     EPS = 1.0E-8
     ITER = 1
-    T = np.zeros((ni + 1, nj + 1))
-    T[0, :] = 1
+    T = np.ones((ni + 1, nj + 1))
     T[ni, :] = 2
     T_ex = T
     with open('Residuals.plt', 'w') as f:
         while ITER <= max_iter:
-            RES = 0
+            RES = np.zeros((ni + 1, nj + 1))
             for i in range(1, ni):
                 for j in range(1, nj):
                     dx_min = 100000
@@ -75,19 +74,16 @@ def calc_CD(ni: int, nj: int, vel_cd: object, CFL, Re, Pr, RES,
 
                     dx = 0.5 * (dx_min + dx_max)
                     dt = CFL * dx / 1
-                    T[i, j] = T_ex[i, j] - dt * RES[i, j] / cell_volume[i-1, j-1]
-
+                    T[i, j] = T_ex[i, j] - dt * RES[i, j] / cell_volume[i - 1, j - 1]
 
             if ITER == 1:
-                RESM = np.max(RES[1:ni-1, 1:nj-1])
-            f.write(f'{ITER} {np.max(RES[1:ni-1,1:nj-1])/RESM}')
+                RESM = np.max(RES[1:ni - 1, 1:nj - 1])
+            f.write(f'{ITER} {np.max(RES[1:ni - 1, 1:nj - 1]) / RESM}')
 
             ITER += 1
             T_ex = T
 
-            if np.max(np.abs(RES[1:ni-1,1:nj-1])) < EPS:
+            if np.max(np.abs(RES[1:ni - 1, 1:nj - 1])) < EPS:
                 break
 
     return T
-
-
