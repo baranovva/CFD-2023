@@ -53,11 +53,9 @@ Subroutine B_CalcLaplacian(NI,NJ,P,GradP,LapP,CellVolume,CellCenter,IFaceCenter,
                 
                 dpdn = (P(I_N,J_N)-P(I,J))/DNC
                 
-                IF (DN<1E-5) THEN
+                IF (DN<1E-7) THEN
                     dpdn_c=DOT_PRODUCT(GradP(I,J,:),NF(:))
-                    !dpdn=dpdn_c !0-ORDER
-                    !dpdn=dpdn+(dpdn-dpdn_c) !1-ORDER
-                    dpdn=5.0/3.0*dpdn-2.0/3.0*dpdn_c !2-ORDER возможно +2/3, так как нормаль в другую сторону в лекци€х
+                    dpdn=5.0/3.0*dpdn-2.0/3.0*dpdn_c !2-ORDER
                     GF(:)=GradP(I,J,:)
                 ENDIF
                 			

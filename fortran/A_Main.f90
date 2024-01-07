@@ -1,6 +1,6 @@
 Program Main
 
-  character(*), parameter:: InputFile='input.txt',OutputFile='data.plt',InputMesh='InputMesh.txt',Temper='Temperature.txt',Veloc='VelocityField.txt',OutputCD='OutputCD.plt'! names of input and output files
+  character(*), parameter:: InputFile='input.txt',OutputFile='data.plt',InputMesh='InputMesh.txt',Temper='T_FOU.txt',Veloc='VelocityField.txt',OutputCD='OutputCD.plt'! names of input and output files
   character MeshFile*30        ! name of file with computational mesh
   integer, parameter:: IO = 12, II = 13, III=14, IIII=15 ! input-output unit
   real,allocatable,dimension(:,:):: X,Y,P,CellVolume,X1,Y1,CellVolume1,T_et, T,TError ! scalar arrays
@@ -20,8 +20,8 @@ Program Main
   !READ(IO,*) INT(NIter)
   NIter = 10
   MODE = 3
-  CFL = 0.01
-  Re = 100.0
+  CFL = 0.25
+  Re = 80.0
   Pr = 1.0
   CLOSE(IO)
 
@@ -116,6 +116,7 @@ Program Main
   ENDDO
   write(*,*) 'Maximum Gradx-error:', maxval(GradPError(1:NI-1,1:NJ-1,1))
   write(*,*) 'Maximum Grady-error:', maxval(GradPError(1:NI-1,1:NJ-1,2))
+  !write(*,*) X(NI/2-2,NJ/2-2), Y(NI/2-2,NJ/2-2), GradPError(NI/2-2,NJ/2-2,1), GradPError(NI/2-2,NJ/2-2,2)
  
   !=== CALCULATE DIVERGENCE ===
   WRITE(*,*) 'Calculate divergence'
@@ -143,15 +144,8 @@ Program Main
   T = 1.0
   CALL B_CalcCD(NK,NL,VelCD,T,CellVolume1,CellCenter1,IFaceCenter1,IFaceVector1,JFaceCenter1,JFaceVector1,CFL,Re,Pr)
   TError = ABS(T_et-T)/T_et
-  WRITE(*,*) 'Maximum error of C-D: ', MAXVAL(TError(1:NI-1,1:NJ-1)) !Рассмотреть флос с архи-чоу и без
-  !OPEN(2, FILE='Residuals_FIELD.plt')
-  !   Write(2,*) 'VARIABLES = "X", "Y", "RES"' 
-  !Write(2,*) 'ZONE I=',NK,', J=',NL,', DATAPACKING=BLOCK, VARLOCATION=([3-20]=CELLCENTERED)'
-  !Write(2,'(100F14.7)') X1(1:NI,1:NJ) 
-  !Write(2,'(100F14.7)') Y1(1:NI,1:NJ)
-  !Write(2,'(100F14.7)') RES(1:NI-1,1:NJ-1)
-  !CLOSE(2)
-    CLOSE(IO)
+  WRITE(*,*) 'Maximum error of C-D: ', MAXVAL(TError(1:NK-1,1:NL-1)) 
+  
   
   !=== OUTPUT FIELDS ===
   WRITE(*,*) 'Output fields to file: ', OutputFile       

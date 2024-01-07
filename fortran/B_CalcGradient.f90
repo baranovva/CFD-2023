@@ -7,9 +7,6 @@ Subroutine B_CalcGradient(NI,NJ,P,GradP,CellVolume,CellCenter,IFaceCenter,IFaceV
     
     REAL :: GP(2),VOL, RF(2), SF(2), RC(2), RN(2), RE(2), GPE(2),PF,PE
     INTEGER :: IFace,I_N,J_N
-    !INTEGER :: I,J,I_N,J_N,IFace,NCELL(4,2)
-    !REAL :: VOL, RC(2), RF(2), SF(2), GP(2)
-    !REAL :: DC,DN,RN(2),PF
     
     DO I=1,NI-1
         DO J=1,NJ-1

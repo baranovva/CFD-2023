@@ -7,9 +7,6 @@ Subroutine B_CalcDivergence(NI,NJ,V,P,DivV,GradP,CellVolume,CellCenter,IFaceCent
     
     REAL :: VOL, RF(2), SF(2), RC(2), RN(2), VF(2), DC, DN, PF, GFLUX, PN, GC, GB, GN
     INTEGER :: IFace,I_N,J_N,MODE
-    !INTEGER :: I,J,I_N,J_N,IFace,NCELL(4,2)
-    !REAL :: VOL, RC(2), RF(2), SF(2), GP(2)
-    !REAL :: DC,DN,RN(2),PF
     
     DO I=1,NI-1
         DO J=1,NJ-1
