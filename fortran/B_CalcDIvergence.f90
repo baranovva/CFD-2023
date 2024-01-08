@@ -14,10 +14,10 @@ Subroutine B_CalcDivergence(NI,NJ,V,P,DivV,GradP,CellVolume,CellCenter,IFaceCent
                 SELECT CASE(IFace)
                 
                 CASE(1)
-                    I_N=I-1 !Индексы соседних ячеек
+                    I_N=I-1 !пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                     J_N=J
-                    RF(:) = IFaceCenter(I,J,:) !Радиус-вектор центра грани
-                    SF(:) = -IFaceVector(I,J,:) !Вектор площади грани
+                    RF(:) = IFaceCenter(I,J,:) !пїЅпїЅпїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+                    SF(:) = -IFaceVector(I,J,:) !пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                 CASE(2)
                     I_N=I+1 
                     J_N=J
@@ -36,33 +36,33 @@ Subroutine B_CalcDivergence(NI,NJ,V,P,DivV,GradP,CellVolume,CellCenter,IFaceCent
                 END SELECT
                 
                 VOL = CellVolume(I,J)
-                RC(:) = CellCenter(I,J,:) ! центр текущей ячейки 
-                RN(:) = CellCenter(I_N,J_N,:) !центр соседней ячейки
+                RC(:) = CellCenter(I,J,:) ! пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
+                RN(:) = CellCenter(I_N,J_N,:) !пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 
-                DC = Norm2(RF(:)-RC(:)) !норм2 - модуль вектора, расстояние до грани
-                DN = Norm2(RF(:)-RN(:)) ! расстояние от центра соседней до грани
+                DC = Norm2(RF(:)-RC(:)) !пїЅпїЅпїЅпїЅ2 - пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+                DN = Norm2(RF(:)-RN(:)) ! пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                 
                 VF(1) = RLinearInterp(DC,DN,V(I,J,1),V(I_N,J_N,1))
                 VF(2) = RLinearInterp(DC,DN,V(I,J,2),V(I_N,J_N,2))
                 
-                GFLUX = DOT_PRODUCT(SF(:),VF(:)) !Для того, чтобы понять куда течет: из или в
+                GFLUX = DOT_PRODUCT(SF(:),VF(:))
                 SELECT CASE(MODE)
-                CASE(1)!Центральная
+                CASE(1)
                     
                     PF = RLinearInterp(DC,DN,P(I,J),P(I_N,J_N))
                     DivV(I,J) = DivV(I,J) + DOT_PRODUCT(PF*VF,SF)
                     
-                CASE(2)!Противопоточная 1-го порядка
+                CASE(2)
                     
                     IF (GFLUX>=0.0) THEN
                         PF=P(I,J)
                     ELSE
                         PF=P(I_N,J_N)
-                        IF (DN<1E-6) PF=2*P(I_N,J_N)-P(I,J) !Экстраполяция для заграничных
+                        IF (DN<1E-6) PF=2*P(I_N,J_N)-P(I,J)
                     ENDIF
                     DivV(I,J) = DivV(I,J) + DOT_PRODUCT(PF*VF,SF)
                     
-                CASE(3)!Противопоточная 2-го порядка
+                CASE(3)
                     
                     IF (GFLUX>=0.0) THEN
                         PF=P(I,J)+DOT_PRODUCT(RF(:)-CellCenter(I,J,:),GradP(I,J,:))

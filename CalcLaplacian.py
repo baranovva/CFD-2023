@@ -41,7 +41,7 @@ def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
                 n_f = np.zeros_like(s_f)
                 n_f[:] = s_f[:] / norm(s_f[:])  # eдиничный вектор внешней нормали
 
-                # for skew correction
+                # skew correction
                 rnc = (cell_center[i_n, j_n, :] - cell_center[i, j, :]) / dnc  # вектор по линии центров
                 g_f = np.zeros_like(s_f)
                 g_f[0] = r_linear_interp(dc, dn, grad_p[i, j, 0], grad_p[i_n, j_n, 0])
@@ -49,9 +49,9 @@ def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
 
                 dpdn = (p[i_n, j_n] - p[i, j]) / dnc  # производная  dp/dn
 
-                if dn < 1e-5:
+                if dn < 1e-7:
                     dpdn_c = np.dot(grad_p[i, j, :], n_f[:])
-                    dpdn = (5 * dpdn - 2 * dpdn_c) / 3  # 2 - ORDER
+                    dpdn = (5 * dpdn - 2 * dpdn_c) / 3  # 2-order
                     g_f = grad_p[i, j, :]
 
                 dpdn += np.dot(n_f[:] - rnc[:], g_f[:])

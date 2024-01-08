@@ -2,7 +2,6 @@ import numpy as np
 
 from Functions import r_linear_interp
 from numpy.linalg import norm
-from numpy import dot
 
 
 def calc_rotter(ni: int, nj: int, v: object,

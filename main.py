@@ -15,15 +15,15 @@ ni, nj, x, y = funcs.mesh_reader(file_name='base.msh')  # base.msh fine.msh skew
 cell_volume, cell_center, i_face_center, j_face_center, i_face_vector, j_face_vector = CalcMetric(ni, nj, x, y).run()
 
 # Initiate field P
-p = np.empty((ni + 1, nj + 1))
-grad_p_exact = np.empty((ni + 1, nj + 1, 2))
+p = np.zeros((ni + 1, nj + 1))
+grad_p_exact = np.zeros((ni + 1, nj + 1, 2))
 for i in range(ni + 1):
     for j in range(nj + 1):
-        p[i, j] = cell_center[i, j, 0] + cell_center[i, j, 1]
-        grad_p_exact[:, :, 0] = 1
-        grad_p_exact[:, :, 1] = 1
+        p[i, j] = cell_center[i, j, 0] ** 2 + cell_center[i, j, 1] ** 2 + cell_center[i, j, 0] + cell_center[i, j, 1]
+        grad_p_exact[:, :, 0] = 2 * cell_center[i, j, 0] + 1
+        grad_p_exact[:, :, 1] = 2 * cell_center[i, j, 0] + 1
 
-# funcs.figure(5, 'p', p[1:ni, 1:nj], 'turbo')
+funcs.figure(5, 'p', p[1:ni, 1:nj], 'turbo')
 
 # Calculate gradient p
 grad_p = np.zeros((ni + 1, nj + 1, 2))
@@ -37,11 +37,12 @@ for _ in range(n_iter):
                            i_face_vector=i_face_vector,
                            j_face_vector=j_face_vector)
 
-grad_p_error = np.abs(1 - (grad_p / grad_p_exact))
+grad_p_error = np.abs((grad_p_exact - grad_p) / grad_p_exact)
 print(f'Maximum GradPx-error: {np.max(grad_p_error[1:ni, 1:nj, 0])}')
 print(f'Maximum GradPy-error: {np.max(grad_p_error[1:ni, 1:nj, 1])}')
-# funcs.figure(5, 'grad_p_x', grad_p[1:ni, 1:nj, 0], 'turbo')
-# funcs.figure(5, 'grad_p_y', grad_p[1:ni, 1:nj, 1], 'turbo')
+funcs.figure(5, 'grad_p_x', grad_p[1:ni, 1:nj, 0], 'turbo')
+funcs.figure(5, 'grad_p_y', grad_p[1:ni, 1:nj, 1], 'turbo')
+funcs.figure(5, 'grad_p_error', grad_p_error[1:ni, 1:nj, 1], 'turbo')
 
 # Initiate field V
 v = np.zeros((ni + 1, nj + 1, 2))
@@ -66,9 +67,9 @@ div_v_p = calc_divergence(mode=mode, ni=ni, nj=nj,
                           j_face_vector=j_face_vector)
 div_v_p_error = np.abs(1 - (div_v_p / div_v_p_exact))
 
-print(f'Maximum DivV-error: {np.max(div_v_p_error[1:ni, 1:nj])}')
-# funcs.figure(5, 'div_v', div_v_p[1:ni, 1:nj], 'turbo')
-# funcs.figure(5, 'div_v_error', div_v_p_error[1:ni, 1:nj], 'turbo')
+print(f'Maximum DivV_P-error: {np.max(div_v_p_error[1:ni, 1:nj])}')
+# funcs.figure(5, 'div_v_p', div_v_p[1:ni, 1:nj], 'turbo')
+# funcs.figure(5, 'div_v_p_error', div_v_p_error[1:ni, 1:nj], 'turbo')
 
 # Calculate laplacian P
 lap_p_exact = np.zeros((ni + 1, nj + 1))

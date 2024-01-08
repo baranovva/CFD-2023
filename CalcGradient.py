@@ -48,7 +48,7 @@ def calc_gradient(ni: int, nj: int, p: object, grad_p: object,
                 # grad в точке е
                 gp_e = np.zeros(2)
                 gp_e[0] = r_linear_interp(dc, dn, grad_p[i, j, 0], grad_p[i_n, j_n, 0])
-                gp_e[0] = r_linear_interp(dc, dn, grad_p[i, j, 1], grad_p[i_n, j_n, 1])
+                gp_e[1] = r_linear_interp(dc, dn, grad_p[i, j, 1], grad_p[i_n, j_n, 1])
 
                 # лин интерполяция радиус вектора в точке e
                 p_f = p_e + np.dot(r_f[:] - r_e[:], gp_e[:])

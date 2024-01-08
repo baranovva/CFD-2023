@@ -5,20 +5,18 @@ Subroutine B_CalcLaplacian(NI,NJ,P,GradP,LapP,CellVolume,CellCenter,IFaceCenter,
     REAL :: CellVolume(NI-1,NJ-1)
     REAL :: CellCenter(0:NI,0:NJ,2), IFaceCenter( NI,NJ-1,2), IFaceVector( NI,NJ-1,2), JFaceCenter( NI-1,NJ,2), JFaceVector( NI-1,NJ,2)
     
-    REAL :: GP(2),VOL, RF(2), SF(2), RC(2), RN(2), DNC, NF(2), RNC(2), GF(2), dpdn, dpdn_c
+    REAL :: VOL, RF(2), SF(2), RC(2), RN(2), DNC, NF(2), RNC(2), GF(2), dpdn, dpdn_c
     INTEGER :: IFace,I_N,J_N
     
     DO I=1,NI-1
         DO J=1,NJ-1
-            GP = 0.0
             DO IFace=1,4
                 SELECT CASE(IFace)
-                
                 CASE(1)
-                    I_N=I-1 !Индексы соседних ячеек
+                    I_N=I-1
                     J_N=J
-                    RF(:) = IFaceCenter(I,J,:) !Радиус-вектор центра грани
-                    SF(:) = -IFaceVector(I,J,:) !Вектор площади грани
+                    RF(:) = IFaceCenter(I,J,:)
+                    SF(:) = -IFaceVector(I,J,:)
                 CASE(2)
                     I_N=I+1 
                     J_N=J
@@ -37,17 +35,16 @@ Subroutine B_CalcLaplacian(NI,NJ,P,GradP,LapP,CellVolume,CellCenter,IFaceCenter,
                 END SELECT
                 
                 VOL = CellVolume(I,J)
-                RC(:) = CellCenter(I,J,:) ! центр текущей ячейки 
-                RN(:) = CellCenter(I_N,J_N,:) !центр соседней ячейки
+                RC(:) = CellCenter(I,J,:)
+                RN(:) = CellCenter(I_N,J_N,:)
                 
-                DC = Norm2(RF(:)-RC(:)) !норм2 - модуль вектора, расстояние до грани
-                DN = Norm2(RF(:)-RN(:)) ! расстояние от центра соседней до грани
-                DNC = Norm2(CellCenter(I_N,J_N,:)-CellCenter(I,J,:)) !Расстояние между центрами ячеек
-                NF(:) = SF(:)/Norm2(SF(:)) !Перпендикулярный вектор грани
+                DC = Norm2(RF(:)-RC(:))
+                DN = Norm2(RF(:)-RN(:))
+                DNC = Norm2(CellCenter(I_N,J_N,:)-CellCenter(I,J,:))
+                NF(:) = SF(:)/Norm2(SF(:))
                 
                 !for skew correction
-                
-                RNC(:)=(CellCenter(I_N,J_N,:)-CellCenter(I,J,:))/DNC !Вектор по линии центров
+                RNC(:)=(CellCenter(I_N,J_N,:)-CellCenter(I,J,:))/DNC
                 GF(1) = RLinearInterp(DC,DN,GradP(I,J,1),GradP(I_N,J_N,1))
 				GF(2) = RLinearInterp(DC,DN,GradP(I,J,2),GradP(I_N,J_N,2))
                 
