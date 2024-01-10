@@ -6,13 +6,12 @@ def mesh_reader(file_name: str) -> object:
     with (open(file_name, 'r') as f):
         # Read nodes number (ni,nj) from file with mesh
         ni, nj = map(int, f.readline().split())
-        x = np.empty((ni, nj))
-        y = np.empty((ni, nj))
+        x = np.empty((ni+1, nj+1))
+        y = np.empty((ni+1, nj+1))
         # Read mesh from file
-        for i in range(ni):
-            for j in range(nj):
+        for i in range(1, ni+1):
+            for j in range(1, nj+1):
                 x[i, j], y[i, j] = map(float, f.readline().split())
-
         return ni, nj, x, y
 
 

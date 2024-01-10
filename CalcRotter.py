@@ -15,23 +15,23 @@ def calc_rotter(ni: int, nj: int, v: object,
                 if i_face == 1:
                     i_n = i - 1
                     j_n = j
-                    r_f = i_face_center[i - 1, j - 1, :]
-                    s_f = - i_face_vector[i - 1, j - 1, :]
+                    r_f = i_face_center[i, j, :]
+                    s_f = - i_face_vector[i, j, :]
                 elif i_face == 2:
                     i_n = i + 1
                     j_n = j
-                    r_f = i_face_center[i, j - 1, :]
-                    s_f = i_face_vector[i, j - 1, :]
+                    r_f = i_face_center[i + 1, j, :]
+                    s_f = i_face_vector[i + 1, j, :]
                 elif i_face == 3:
                     i_n = i
                     j_n = j - 1
-                    r_f = j_face_center[i - 1, j - 1, :]
-                    s_f = - j_face_vector[i - 1, j - 1, :]
+                    r_f = j_face_center[i, j, :]
+                    s_f = - j_face_vector[i, j, :]
                 else:
                     i_n = i
                     j_n = j + 1
-                    r_f = j_face_center[i - 1, j, :]
-                    s_f = j_face_vector[i - 1, j, :]
+                    r_f = j_face_center[i, j + 1, :]
+                    s_f = j_face_vector[i, j + 1, :]
 
                 dc = norm(r_f[:] - cell_center[i, j, :])  # расстояние от границы до центра текущей ячейки,
                 # радиус вектор центра ячейка, индексы пробегаем
@@ -44,6 +44,6 @@ def calc_rotter(ni: int, nj: int, v: object,
 
                 rot_v[i, j] += s_f[0] * v_f[1] - s_f[1] * v_f[0]
 
-            rot_v[i, j] /= cell_volume[i - 1, j - 1]
+            rot_v[i, j] /= cell_volume[i, j]
 
     return rot_v

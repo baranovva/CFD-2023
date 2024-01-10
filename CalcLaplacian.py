@@ -11,27 +11,27 @@ def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
     lap_p = np.zeros((ni + 1, nj + 1))
     for i in range(1, ni):
         for j in range(1, nj):
-            for i_face in (1, 2, 3, 4):
+            for i_face in range(1, 5):
                 if i_face == 1:
                     i_n = i - 1
                     j_n = j
-                    r_f = i_face_center[i - 1, j - 1, :]  # центр грани
-                    s_f = - i_face_vector[i - 1, j - 1, :]
+                    r_f = i_face_center[i, j, :]  # центр грани
+                    s_f = - i_face_vector[i, j, :]
                 elif i_face == 2:
                     i_n = i + 1
                     j_n = j
-                    r_f = i_face_center[i, j - 1, :]
-                    s_f = i_face_vector[i, j - 1, :]
+                    r_f = i_face_center[i + 1, j, :]
+                    s_f = i_face_vector[i + 1, j, :]
                 elif i_face == 3:
                     i_n = i
                     j_n = j - 1
-                    r_f = j_face_center[i - 1, j - 1, :]
-                    s_f = - j_face_vector[i - 1, j - 1, :]
+                    r_f = j_face_center[i, j, :]
+                    s_f = - j_face_vector[i, j, :]
                 else:
                     i_n = i
                     j_n = j + 1
-                    r_f = j_face_center[i - 1, j, :]
-                    s_f = j_face_vector[i - 1, j, :]
+                    r_f = j_face_center[i, j + 1, :]
+                    s_f = j_face_vector[i, j + 1, :]
 
                 dc = norm(r_f[:] - cell_center[i, j, :])  # расстояние от границы до центра текущей ячейки,
                 # радиус вектор центра ячейка, индексы пробегаем
@@ -49,7 +49,7 @@ def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
 
                 dpdn = (p[i_n, j_n] - p[i, j]) / dnc  # производная  dp/dn
 
-                if dn < 1e-7:
+                if dn < 1e-8:
                     dpdn_c = np.dot(grad_p[i, j, :], n_f[:])
                     dpdn = (5 * dpdn - 2 * dpdn_c) / 3  # 2-order
                     g_f = grad_p[i, j, :]
@@ -57,5 +57,5 @@ def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
                 dpdn += np.dot(n_f[:] - rnc[:], g_f[:])
                 lap_p[i, j] += dpdn * norm(s_f[:])
 
-            lap_p[i, j] /= cell_volume[i - 1, j - 1]
+            lap_p[i, j] /= cell_volume[i, j]
     return lap_p

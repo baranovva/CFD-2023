@@ -16,23 +16,23 @@ def calc_divergence(mode: int, ni: int, nj: int, v: object, grad_p: object, p: o
                 if i_face == 1:
                     i_n = i - 1
                     j_n = j
-                    r_f = i_face_center[i - 1, j - 1, :]
-                    s_f = - i_face_vector[i - 1, j - 1, :]
+                    r_f = i_face_center[i, j, :]
+                    s_f = - i_face_vector[i, j, :]
                 elif i_face == 2:
                     i_n = i + 1
                     j_n = j
-                    r_f = i_face_center[i, j - 1, :]
-                    s_f = i_face_vector[i, j - 1, :]
+                    r_f = i_face_center[i + 1, j, :]
+                    s_f = i_face_vector[i + 1, j, :]
                 elif i_face == 3:
                     i_n = i
                     j_n = j - 1
-                    r_f = j_face_center[i - 1, j - 1, :]
-                    s_f = - j_face_vector[i - 1, j - 1, :]
+                    r_f = j_face_center[i, j, :]
+                    s_f = - j_face_vector[i, j, :]
                 else:
                     i_n = i
                     j_n = j + 1
-                    r_f = j_face_center[i - 1, j, :]
-                    s_f = j_face_vector[i - 1, j, :]
+                    r_f = j_face_center[i, j + 1, :]
+                    s_f = j_face_vector[i, j + 1, :]
 
                 dc = norm(r_f[:] - cell_center[i, j, :])  # расстояние от границы до центра текущей ячейки,
                 # радиус вектор центра ячейка, индексы пробегаем
@@ -64,8 +64,8 @@ def calc_divergence(mode: int, ni: int, nj: int, v: object, grad_p: object, p: o
                     else:
                         p_f = p[i_n, j_n] + dot(r_f[:] - cell_center[i_n, j_n, :], grad_p[i_n, j_n, :])
 
-                div_v[i, j] += p_f * dot(v_f[:], s_f[:])
+                div_v[i, j] += dot(p_f * v_f[:], s_f[:])
 
-            div_v[i, j] = div_v[i, j] / cell_volume[i - 1, j - 1]
+            div_v[i, j] = div_v[i, j] / cell_volume[i, j]
 
     return div_v
