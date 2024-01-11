@@ -14,7 +14,7 @@ ni, nj, x, y = funcs.mesh_reader(file_name='base.msh')  # base.msh fine.msh skew
 # Calculate metric
 cell_volume, cell_center, i_face_center, j_face_center, i_face_vector, j_face_vector = CalcMetric(ni, nj, x, y).run()
 
-# Initiate field P
+# Initiate field P and calculate gradient p
 p = np.zeros((ni + 1, nj + 1))
 grad_p_exact = np.zeros((ni + 1, nj + 1, 2))
 for i in range(ni + 1):
@@ -23,7 +23,6 @@ for i in range(ni + 1):
         grad_p_exact[i, j, 0] = 2 * cell_center[i, j, 0] + 1
         grad_p_exact[i, j, 1] = 2 * cell_center[i, j, 1] + 1
 
-# Calculate gradient p
 grad_p = np.zeros((ni + 1, nj + 1, 2))
 n_iter = 10
 for _ in range(n_iter):
@@ -44,7 +43,7 @@ print(f'Maximum GradPy-error: {np.max(grad_p_error[1:ni, 1:nj, 1])}')
 # funcs.figure(5, 'grad_p_error', grad_p_error[1:ni, 1:nj, 0], 'turbo')
 # funcs.figure(5, 'grad_p_error', grad_p_error[1:ni, 1:nj, 1], 'turbo')
 
-# Initiate field V
+# Initiate field V and calculate divergence V and P
 v = np.zeros((ni + 1, nj + 1, 2))
 div_v_p_exact = np.zeros((ni + 1, nj + 1))
 for i in range(ni + 1):
@@ -54,7 +53,6 @@ for i in range(ni + 1):
         div_v_p_exact[i, j] = (4 * (cell_center[i, j, 0] ** 2 + cell_center[i, j, 1] ** 2) +
                                5 * (cell_center[i, j, 0] + cell_center[i, j, 1]) + 2)
 
-# Calculate divergence V and P
 mode = 1
 div_v_p = calc_divergence(mode=mode, ni=ni, nj=nj,
                           v=v, grad_p=grad_p, p=p,
@@ -117,38 +115,3 @@ output_fields(file_name=output_file, ni=ni, nj=nj,
               x=x, y=y, p=p, v=v,
               grad_p=grad_p, grad_p_error=grad_p_error,
               div_v_p=div_v_p, div_v_p_error=div_v_p_error)
-
-'''
-# Calculate C-D
-nk, nl, x_cd, y_cd = funcs.mesh_reader(file_name='InputMesh.txt')
-(cell_volume_cd, cell_center_cd, i_face_center_cd,
- j_face_center_cd, i_face_vector_cd, j_face_vector_cd) = CalcMetric(nk, nl, x_cd, y_cd).run()
-
-with (open('VelocityField.txt', 'r') as f):
-    nk_temp, nl_temp = map(int, f.readline().split())
-    vel_cd = np.zeros((nk_temp, nl_temp, 2))
-    for i in range(nk_temp):
-        for j in range(nl_temp):
-            vel_cd[i, j, 0], vel_cd[i, j, 1] = map(float, f.readline().split())
-
-with (open('Temperature.txt', 'r') as f):
-    nk_temp, nl_temp = map(int, f.readline().split())
-    T_et = np.zeros((nk_temp, nl_temp, 2))
-    for i in range(nk_temp):
-        for j in range(nl_temp):
-            T_et[i, j] = float(f.readline())
-CFL = 0.01
-Re = 100
-Pr = 1
-T = calc_CD(ni=nk, nj=nl, vel_cd=vel_cd,
-            CFL=CFL, Re=Re, Pr=Pr,
-            cell_volume=cell_volume_cd,
-            cell_center=cell_center_cd,
-            i_face_center=i_face_center_cd,
-            j_face_center=j_face_center_cd,
-            i_face_vector=i_face_vector_cd,
-            j_face_vector=j_face_vector_cd)
-
-T_error = np.abs(1 - (T / T_et))
-print(f'Maximum T error: {np.max(T_error[1:ni, 1:nj])}')
-# funcs.figure(5, 'T', T[1:ni, 1:nj], 'turbo')'''
