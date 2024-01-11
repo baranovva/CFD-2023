@@ -24,7 +24,7 @@ class CalcMetric:
     def face_centers_vectors_j(self):
         for i in range(1, self.NI):
             for j in range(1, self.NJ + 1):
-                self.j_face_vector[i, j, 0] = -(self.Y[i + 1, j] - self.Y[i, j])
+                self.j_face_vector[i, j, 0] = - (self.Y[i + 1, j] - self.Y[i, j])
                 self.j_face_vector[i, j, 1] = self.X[i + 1, j] - self.X[i, j]
                 self.j_face_center[i, j, 0] = 0.5 * (self.X[i, j] + self.X[i + 1, j])
                 self.j_face_center[i, j, 1] = 0.5 * (self.Y[i, j] + self.Y[i + 1, j])
