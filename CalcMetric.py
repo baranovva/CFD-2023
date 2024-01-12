@@ -42,7 +42,7 @@ class CalcMetric:
         return cell_volume
 
     def cell_centers(self) -> object:
-        cell_center = np.empty((self.NI+1, self.NJ+1, 2))
+        cell_center = np.empty((self.NI + 1, self.NJ + 1, 2))
 
         # FOR INNER CELLS: CENTER OF CONTOUR
         for i in range(1, self.NI):
@@ -75,3 +75,33 @@ class CalcMetric:
         cell_volume = self.cell_volumes()
 
         return cell_volume, cell_center, self.i_face_center, self.j_face_center, self.i_face_vector, self.j_face_vector
+
+
+def read_metrics(file_name: str, ni: int, nj: int) -> object:
+    cell_center = np.empty((ni + 1, nj + 1, 2))
+    cell_volume = np.empty((ni, nj))
+    i_face_center = np.empty((ni + 1, nj, 2))
+    i_face_vector = np.empty((ni + 1, nj, 2))
+    j_face_center = np.empty((ni, nj + 1, 2))
+    j_face_vector = np.empty((ni, nj + 1, 2))
+    with (open(file_name, 'r') as f):
+        for i in range(ni + 1):
+            for j in range(nj + 1):
+                cell_center[i, j, 0], cell_center[i, j, 1] = map(float, f.readline().split())
+        for i in range(1, ni):
+            for j in range(1, nj):
+                cell_volume[i, j] = float(f.readline())
+        for i in range(1, ni + 1):
+            for j in range(1, nj):
+                i_face_center[i, j, 0], i_face_center[i, j, 1] = map(float, f.readline().split())
+        for i in range(1, ni + 1):
+            for j in range(1, nj):
+                i_face_vector[i, j, 0], i_face_vector[i, j, 1] = map(float, f.readline().split())
+        for i in range(1, ni):
+            for j in range(1, nj + 1):
+                j_face_center[i, j, 0], j_face_center[i, j, 1] = map(float, f.readline().split())
+        for i in range(1, ni):
+            for j in range(1, nj + 1):
+                j_face_vector[i, j, 0], j_face_vector[i, j, 1] = map(float, f.readline().split())
+
+        return cell_volume, cell_center, i_face_center, j_face_center, i_face_vector, j_face_vector

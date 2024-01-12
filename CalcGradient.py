@@ -1,17 +1,18 @@
 import numpy as np
 
-from Functions import r_linear_interp
+from Functions import interp
 from numpy.linalg import norm
+from numba import njit, prange
 
-
+@njit(cache=True, parallel=True)
 def calc_gradient(ni: int, nj: int, p: object, grad_p: object,
                   cell_volume: object, cell_center: object,
                   i_face_center: object, j_face_center: object,
                   i_face_vector: object, j_face_vector: object) -> object:
-    for i in range(1, ni):
-        for j in range(1, nj):
+    for i in prange(1, ni):
+        for j in prange(1, nj):
             gp = np.zeros(2)
-            for i_face in range(1, 5):
+            for i_face in prange(1, 5):
                 if i_face == 1:
                     i_n = i - 1
                     j_n = j
@@ -38,17 +39,17 @@ def calc_gradient(ni: int, nj: int, p: object, grad_p: object,
                 dn = norm(r_f[:] - cell_center[i_n, j_n, :])  # расстояние от границы до центра соседних ячеек
                 # радиус вектор центра ячейка, индексы заграничные
 
-                p_e = r_linear_interp(dc, dn, p[i, j], p[i_n, j_n])  # давление на грани
+                p_e = interp(dc, dn, p[i, j], p[i_n, j_n])  # давление на грани
 
                 # коордиаты до точки e
                 r_e = np.zeros(2)
-                r_e[0] = r_linear_interp(dc, dn, cell_center[i, j, 0], cell_center[i_n, j_n, 0])
-                r_e[1] = r_linear_interp(dc, dn, cell_center[i, j, 1], cell_center[i_n, j_n, 1])
+                r_e[0] = interp(dc, dn, cell_center[i, j, 0], cell_center[i_n, j_n, 0])
+                r_e[1] = interp(dc, dn, cell_center[i, j, 1], cell_center[i_n, j_n, 1])
 
                 # grad в точке е
                 gp_e = np.zeros(2)
-                gp_e[0] = r_linear_interp(dc, dn, grad_p[i, j, 0], grad_p[i_n, j_n, 0])
-                gp_e[1] = r_linear_interp(dc, dn, grad_p[i, j, 1], grad_p[i_n, j_n, 1])
+                gp_e[0] = interp(dc, dn, grad_p[i, j, 0], grad_p[i_n, j_n, 0])
+                gp_e[1] = interp(dc, dn, grad_p[i, j, 1], grad_p[i_n, j_n, 1])
 
                 # лин интерполяция радиус вектора в точке e
                 p_f = p_e + np.dot(r_f[:] - r_e[:], gp_e[:])

@@ -1,17 +1,19 @@
 import numpy as np
 
-from Functions import r_linear_interp
+from Functions import interp
 from numpy.linalg import norm
+from numba import njit, prange
 
 
+@njit(cache=True, parallel=True)
 def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
                    cell_volume: object, cell_center: object,
                    i_face_center: object, j_face_center: object,
                    i_face_vector: object, j_face_vector: object) -> object:
     lap_p = np.zeros((ni + 1, nj + 1))
-    for i in range(1, ni):
-        for j in range(1, nj):
-            for i_face in range(1, 5):
+    for i in prange(1, ni):
+        for j in prange(1, nj):
+            for i_face in prange(1, 5):
                 if i_face == 1:
                     i_n = i - 1
                     j_n = j
@@ -44,8 +46,8 @@ def calc_laplacian(ni: int, nj: int, p: object, grad_p: object,
                 # skew correction
                 rnc = (cell_center[i_n, j_n, :] - cell_center[i, j, :]) / dnc  # вектор по линии центров
                 g_f = np.zeros_like(s_f)
-                g_f[0] = r_linear_interp(dc, dn, grad_p[i, j, 0], grad_p[i_n, j_n, 0])
-                g_f[1] = r_linear_interp(dc, dn, grad_p[i, j, 1], grad_p[i_n, j_n, 1])
+                g_f[0] = interp(dc, dn, grad_p[i, j, 0], grad_p[i_n, j_n, 0])
+                g_f[1] = interp(dc, dn, grad_p[i, j, 1], grad_p[i_n, j_n, 1])
 
                 dpdn = (p[i_n, j_n] - p[i, j]) / dnc  # производная  dp/dn
 

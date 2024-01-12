@@ -1,18 +1,20 @@
 import numpy as np
 
-from Functions import r_linear_interp
+from Functions import interp
 from numpy.linalg import norm
 from numpy import dot
+from numba import njit, prange
 
 
+@njit(cache=True, parallel=True)
 def calc_divergence(mode: int, ni: int, nj: int, v: object, grad_p: object, p: object,
                     cell_volume: object, cell_center: object,
                     i_face_center: object, j_face_center: object,
                     i_face_vector: object, j_face_vector: object):
     div_v = np.zeros((ni + 1, nj + 1))
-    for i in range(1, ni):
-        for j in range(1, nj):
-            for i_face in range(1, 5):
+    for i in prange(1, ni):
+        for j in prange(1, nj):
+            for i_face in prange(1, 5):
                 if i_face == 1:
                     i_n = i - 1
                     j_n = j
@@ -40,11 +42,11 @@ def calc_divergence(mode: int, ni: int, nj: int, v: object, grad_p: object, p: o
                 # радиус вектор центра ячейка, индексы заграничные
 
                 v_f = np.zeros(2)
-                v_f[0] = r_linear_interp(dc, dn, v[i, j, 0], v[i_n, j_n, 0])  # скорость на грани
-                v_f[1] = r_linear_interp(dc, dn, v[i, j, 1], v[i_n, j_n, 1])
+                v_f[0] = interp(dc, dn, v[i, j, 0], v[i_n, j_n, 0])  # скорость на грани
+                v_f[1] = interp(dc, dn, v[i, j, 1], v[i_n, j_n, 1])
 
                 if mode == 1:
-                    p_f = r_linear_interp(dc, dn, p[i, j], p[i_n, j_n])
+                    p_f = interp(dc, dn, p[i, j], p[i_n, j_n])
                 elif mode == 2:  # противопоточная 1 порядка
                     if dot(s_f, v_f) >= 0:
                         p_f = p[i, j]
@@ -66,6 +68,6 @@ def calc_divergence(mode: int, ni: int, nj: int, v: object, grad_p: object, p: o
 
                 div_v[i, j] += dot(p_f * v_f[:], s_f[:])
 
-            div_v[i, j] = div_v[i, j] / cell_volume[i, j]
+            div_v[i, j] /= cell_volume[i, j]
 
     return div_v
