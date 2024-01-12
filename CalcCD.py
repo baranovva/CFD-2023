@@ -12,11 +12,11 @@ def calc_cd(ni: int, nj: int, v_cd: object, max_iter: int, x: object,
      j_face_center, i_face_vector, j_face_vector) = CalcMetric(ni, nj, y, x).run()
 
     T = np.ones((ni + 1, nj + 1))
-    T[:, nj] = 2
+    T[:, nj] = 2  # T[:, nj]
     T_ex = np.ones_like(T)
     res = np.array([])
     v_f = np.empty(2)
-    cfl_sqrt_volume_v = CFL / np.sqrt(cell_volume[:, :] * norm(v_cd[:, :, :], axis=2))
+    cfl_sqrt_volume_v = CFL / np.sqrt(cell_volume[1:ni, 1:nj] * norm(v_cd[1:ni, 1:nj, :], axis=2))
     Re_Pr = Re * Pr
 
     for iteration in range(max_iter):
@@ -45,7 +45,7 @@ def calc_cd(ni: int, nj: int, v_cd: object, max_iter: int, x: object,
                         j_n = j + 1
                         r_f = j_face_center[i, j + 1, :]
                         s_f = j_face_vector[i, j + 1, :]
-                    if not (i_n == ni or i_n == 0):
+                    if not (i_n == ni or i_n == 0):  # i_n == ni or i_n == 0
                         dc = norm(r_f[:] - cell_center[i, j, :])  # расстояние от границы до
                         # центра текущей ячейки, вектор центра ячейка, индексы пробегаем
                         dn = norm(r_f[:] - cell_center[i_n, j_n, :])  # расстояние от границы до
@@ -72,7 +72,7 @@ def calc_cd(ni: int, nj: int, v_cd: object, max_iter: int, x: object,
 
         max_res_for_iteration = np.abs(np.max((RES[1:ni, 1:nj])))
         res = np.append(res, [iteration, max_res_for_iteration])
-        if max_res_for_iteration < 1e-10:
+        if max_res_for_iteration < 1e-14:
             break
 
         iteration += 1

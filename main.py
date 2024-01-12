@@ -41,10 +41,11 @@ for _ in range(n_iter):
                            cell_volume=cell_volume, cell_center=cell_center,
                            i_face_center=i_face_center, j_face_center=j_face_center,
                            i_face_vector=i_face_vector, j_face_vector=j_face_vector)
+    grad_p_error = np.abs((grad_p_exact - grad_p) / grad_p_exact)
+    print(f'Maximum GradPx-error: {np.max(grad_p_error[1:ni, 1:nj, 0])}')
+    print(f'Maximum GradPy-error: {np.max(grad_p_error[1:ni, 1:nj, 1])}')
+
 print(f'Time:{time.time() - start_time} s')
-grad_p_error = np.abs((grad_p_exact - grad_p) / grad_p_exact)
-print(f'Maximum GradPx-error: {np.max(grad_p_error[1:ni, 1:nj, 0])}')
-print(f'Maximum GradPy-error: {np.max(grad_p_error[1:ni, 1:nj, 1])}')
 
 # Initiate field V and calculate divergence V and P
 v = np.empty((ni + 1, nj + 1, 2))
