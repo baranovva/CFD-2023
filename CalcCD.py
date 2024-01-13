@@ -1,18 +1,18 @@
 import numpy as np
 
-from CalcMetric import CalcMetric
+from CalcMetric import CalcMetric, read_metrics
 from Functions import interp
 from numpy.linalg import norm
 from numpy import dot
 
 
-def calc_cd(ni: int, nj: int, v_cd: object, max_iter: int, x: object,
-            y: object, CFL=0.01, Re=100, Pr=1, central_scheme=True):
+def calc_cd(ni: int, nj: int, v_cd: object, max_iter: int, x: object, y: object,
+            CFL=0.01, Re=100, Pr=1, central_scheme=True):
     (cell_volume, cell_center, i_face_center,
      j_face_center, i_face_vector, j_face_vector) = CalcMetric(ni, nj, y, x).run()
 
     T = np.ones((ni + 1, nj + 1))
-    T[:, nj] = 2  # T[:, nj]
+    T[:, nj] = 2  # T[:, nj] T[ni, :]
     T_ex = np.ones_like(T)
     res = np.array([])
     v_f = np.empty(2)
@@ -45,7 +45,7 @@ def calc_cd(ni: int, nj: int, v_cd: object, max_iter: int, x: object,
                         j_n = j + 1
                         r_f = j_face_center[i, j + 1, :]
                         s_f = j_face_vector[i, j + 1, :]
-                    if not (i_n == ni or i_n == 0):  # i_n == ni or i_n == 0
+                    if not (i_n == ni or i_n == 0):  # (i_n == ni or i_n == 0)  (j_n == nj or j_n == 0)
                         dc = norm(r_f[:] - cell_center[i, j, :])  # расстояние от границы до
                         # центра текущей ячейки, вектор центра ячейка, индексы пробегаем
                         dn = norm(r_f[:] - cell_center[i_n, j_n, :])  # расстояние от границы до

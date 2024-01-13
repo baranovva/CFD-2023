@@ -3,7 +3,8 @@ from numpy import savetxt
 
 def output_fields(file_name: str, ni: int, nj: int, x: object, y: object,
                   p=None, v=None, grad_p=None, grad_p_error=None,
-                  div_v_p=None, div_v_p_error=None, t=None, t_error=None) -> None:
+                  div_v_p=None, div_v_p_error=None, t=None, t_error=None,
+                  lap_p=None, lap_p_error=None, rot_v=None, rot_v_error=None) -> None:
     with open(file_name, 'w') as f:
         header = 'VARIABLES = "x", "y"'
         if p is not None:
@@ -22,6 +23,14 @@ def output_fields(file_name: str, ni: int, nj: int, x: object, y: object,
             header += ', "T"'
         if t_error is not None:
             header += ', "T_error"'
+        if lap_p is not None:
+            header += ', "Lap(p)"'
+        if lap_p_error is not None:
+            header += ', "Lap(p)_error"'
+        if rot_v is not None:
+            header += ', "rot(v)"'
+        if rot_v_error is not None:
+            header += ', "rot(v)_error"'
         f.write(f'{header}\n')
         f.write(f'ZONE I={ni}, J={nj}, DATAPACKING=BLOCK,VARLOCATION=([3-20]=CELLCENTERED)\n')
 
@@ -46,3 +55,11 @@ def output_fields(file_name: str, ni: int, nj: int, x: object, y: object,
             savetxt(f, t[1:ni, 1:nj], fmt='%25.17f')
         if t_error is not None:
             savetxt(f, t_error[1:ni, 1:nj], fmt='%25.17f')
+        if lap_p is not None:
+            savetxt(f, lap_p[1:ni, 1:nj], fmt='%25.17f')
+        if lap_p_error is not None:
+            savetxt(f, lap_p_error[1:ni, 1:nj], fmt='%25.17f')
+        if rot_v is not None:
+            savetxt(f, rot_v[1:ni, 1:nj], fmt='%25.17f')
+        if rot_v_error is not None:
+            savetxt(f, rot_v_error[1:ni, 1:nj], fmt='%25.17f')

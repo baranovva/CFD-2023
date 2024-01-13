@@ -16,8 +16,9 @@ cell_volume, cell_center, i_face_center, j_face_center, i_face_vector, j_face_ve
 
 # Initiate field P and calculate gradient p
 def calculate_p(i, j, cell_center):
-    p_ij = cell_center[i, j, 0] ** 2 + cell_center[i, j, 1] ** 2 + cell_center[i, j, 0] + cell_center[i, j, 1]
-    grad_p_exact_ij = np.array([2 * cell_center[i, j, 0] + 1, 2 * cell_center[i, j, 1] + 1])
+    p_ij = 10 * cell_center[i, j, 0] ** 2 + 6 * cell_center[i, j, 1] + 4
+    grad_p_exact_ij = np.array([10,
+                                6])
     return (i, j, p_ij, grad_p_exact_ij)
 
 
@@ -41,19 +42,18 @@ for _ in range(n_iter):
                            cell_volume=cell_volume, cell_center=cell_center,
                            i_face_center=i_face_center, j_face_center=j_face_center,
                            i_face_vector=i_face_vector, j_face_vector=j_face_vector)
-    grad_p_error = np.abs((grad_p_exact - grad_p) / grad_p_exact)
-    print(f'Maximum GradPx-error: {np.max(grad_p_error[1:ni, 1:nj, 0])}')
-    print(f'Maximum GradPy-error: {np.max(grad_p_error[1:ni, 1:nj, 1])}')
 
 print(f'Time:{time.time() - start_time} s')
+grad_p_error = np.abs((grad_p_exact - grad_p) / grad_p_exact)
+print(f'Maximum GradPx-error: {np.max(grad_p_error[1:ni, 1:nj, 0])}')
+print(f'Maximum GradPy-error: {np.max(grad_p_error[1:ni, 1:nj, 1])}')
 
 # Initiate field V and calculate divergence V and P
 v = np.empty((ni + 1, nj + 1, 2))
 div_v_p_exact = np.empty((ni + 1, nj + 1))
-v[:, :, 0] = 1 + cell_center[:, :, 0]
-v[:, :, 1] = 1 + cell_center[:, :, 1]
-div_v_p_exact[:, :] = (4 * (cell_center[:, :, 0] ** 2 + cell_center[:, :, 1] ** 2) +
-                       5 * (cell_center[:, :, 0] + cell_center[:, :, 1]) + 2)
+v[:, :, 0] = np.sin(cell_center[:, :, 1])
+v[:, :, 1] = np.exp(cell_center[:, :, 0])
+div_v_p_exact[:, :] = 92 + 6 * cell_center[:, :, 0] + 20 * cell_center[:, :, 1]
 
 mode = 1
 div_v_p = calc_divergence(mode=mode, ni=ni, nj=nj, v=v, grad_p=grad_p, p=p,
@@ -65,7 +65,7 @@ print(f'Maximum DivV_P-error: {np.max(div_v_p_error[1:ni, 1:nj])}')
 
 # Calculate laplacian P
 lap_p_exact = np.zeros((ni + 1, nj + 1))
-lap_p_exact[:, :] = 4
+lap_p_exact[:, :] = 20
 
 lap_p = calc_laplacian(ni=ni, nj=nj, p=p, grad_p=grad_p,
                        cell_volume=cell_volume, cell_center=cell_center,
@@ -76,7 +76,7 @@ print(f'Maximum LapP-error: {np.max(lap_p_error[1:ni, 1:nj])}')
 
 # Calculate rotV
 rot_v_exact = np.empty((ni + 1, nj + 1))
-rot_v_exact[:, :] = 0
+rot_v_exact[:, :] = np.exp(cell_center[:, :, 0]) - np.sin(cell_center[:, :, 1])
 
 rot_v = calc_rotter(ni=ni, nj=nj, v=v,
                     cell_volume=cell_volume, cell_center=cell_center,
@@ -88,4 +88,5 @@ print(f'Maximum rotV error: {np.max(rot_v_error[1:ni, 1:nj])}')
 # Output fields to file
 output_file = 'output/data.dat'
 output_fields(file_name=output_file, ni=ni, nj=nj, x=x, y=y, p=p, v=v,
-              grad_p=grad_p, grad_p_error=grad_p_error, div_v_p=div_v_p, div_v_p_error=div_v_p_error)
+              grad_p=grad_p, grad_p_error=grad_p_error, div_v_p=div_v_p, div_v_p_error=div_v_p_error,
+              lap_p_error=lap_p_error, lap_p=lap_p, rot_v_error=rot_v_error, rot_v=rot_v)

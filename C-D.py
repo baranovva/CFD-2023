@@ -16,7 +16,7 @@ with (open('input/Temperature.txt', 'r') as f):  # Temperature.txt T_Central.txt
     T_e = np.array([[float(f.readline()) for _ in range(nj + 1)] for _ in range(ni + 1)])
 
 t = time.time()
-T = calc_cd(ni=ni, nj=nj, v_cd=v_cd, x=x, y=y, max_iter=25000, CFL=0.01, Re=100, central_scheme=False)
+T = calc_cd(ni=ni, nj=nj, v_cd=v_cd, x=x, y=y, max_iter=25000, CFL=0.01, Re=100, central_scheme=True)
 print(time.time() - t)
 
 T_error = np.abs(1 - (T / T_e))
