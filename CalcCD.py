@@ -80,7 +80,7 @@ def calc_cd(ni: int, nj: int, v_cd: object, max_iter: int, x: object, y: object,
     max_res = res[1]
     res = res.reshape(-1, 2)
     res[:, 1] = res[:, 1] / max_res
-    with open('output/Residuals.plt', 'w') as f:
+    with open('cd/Residuals.plt', 'w') as f:
         np.savetxt(f, res, fmt='%25.17f')
 
     return T

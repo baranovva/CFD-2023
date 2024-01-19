@@ -10,15 +10,16 @@ from CalcRotter import calc_rotter
 from OutputFields import output_fields
 from joblib import Parallel, delayed
 
-ni, nj, x, y = funcs.mesh_reader(file_name='input/base.msh')  # base.msh fine.msh skew.msh
+ni, nj, x, y = funcs.mesh_reader(file_name='input/fine.msh')  # base.msh fine.msh skew.msh
 cell_volume, cell_center, i_face_center, j_face_center, i_face_vector, j_face_vector = CalcMetric(ni, nj, y, x).run()
 
 
 # Initiate field P and calculate gradient p
 def calculate_p(i, j, cell_center):
-    p_ij = 10 * cell_center[i, j, 0] ** 2 + 6 * cell_center[i, j, 1] + 4
-    grad_p_exact_ij = np.array([10,
-                                6])
+    p_ij = (2 * cell_center[i, j, 0] ** 3 + cell_center[i, j, 1] ** 3 + cell_center[i, j, 0] **2 +
+            4 * cell_center[i, j, 1] + cell_center[i, j, 0] + 1)
+    grad_p_exact_ij = np.array([1 + 2 * cell_center[i, j, 0] + 6 * cell_center[i, j, 0] ** 2,
+                                4 + 3 * cell_center[i, j, 1] ** 2])
     return (i, j, p_ij, grad_p_exact_ij)
 
 
@@ -51,10 +52,10 @@ print(f'Maximum GradPy-error: {np.max(grad_p_error[1:ni, 1:nj, 1])}')
 # Initiate field V and calculate divergence V and P
 v = np.empty((ni + 1, nj + 1, 2))
 div_v_p_exact = np.empty((ni + 1, nj + 1))
-v[:, :, 0] = np.sin(cell_center[:, :, 1])
-v[:, :, 1] = np.exp(cell_center[:, :, 0])
-div_v_p_exact[:, :] = 92 + 6 * cell_center[:, :, 0] + 20 * cell_center[:, :, 1]
-
+v[:, :, 0] = 5 + 2 * cell_center[:, :, 1]
+v[:, :, 1] = 7 + cell_center[:, :, 0]
+div_v_p_exact[:, :] = ((5 + 2 * cell_center[:, :, 1]) * (1 + 2 * cell_center[:, :, 0] + 6 * cell_center[:, :, 0] ** 2) +
+                       (4 + 3 * cell_center[:, :, 1] ** 2) * (7 + cell_center[:, :, 0]))
 mode = 1
 div_v_p = calc_divergence(mode=mode, ni=ni, nj=nj, v=v, grad_p=grad_p, p=p,
                           cell_volume=cell_volume, cell_center=cell_center,
